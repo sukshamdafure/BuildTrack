@@ -205,11 +205,20 @@ const login = async (req, res) => {
                         "Login failed."
                     );
                 }
+                console.log("Session saved successfully");
+console.log("Session ID exists:", Boolean(req.sessionID));
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("Response headers sent:", res.headersSent);
 
                 console.log(
                     `User logged in: ${user.email} (${user.role})`
                 );
-
+res.on("finish", () => {
+    console.log(
+        "Login response Set-Cookie present:",
+        Boolean(res.getHeader("Set-Cookie"))
+    );
+});
                 return redirectByRole(
                     res,
                     user.role
