@@ -14,7 +14,7 @@ const connectDB = require("./config/db");
 const {
     startDeadlineNotificationScheduler
 } = require("./services/deadlineNotificationService");
-const MongoStore = require("connect-mongo");
+const { default: MongoStore } = require("connect-mongo");
 
 const { loadCurrentUser } = require("./middleware/userMiddleware");
 
