@@ -1,0 +1,115 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+    <div>
+        <span class="page-eyebrow">Worker portal</span>
+        <h1>My work overview</h1>
+        <p>Track your assigned construction activities.</p>
+    </div>
+    <a href="/worker/tasks" class="page-action-button">View all my tasks</a>
+</div>
+
+<div class="task-detail-kpi-grid">
+    <div class="task-detail-kpi">
+        <span>Assigned tasks</span>
+        <strong><%= tasks.length %></strong>
+    </div>
+    <div class="task-detail-kpi">
+        <span>Active tasks</span>
+        <strong><%= activeTasks.length %></strong>
+    </div>
+    <div class="task-detail-kpi">
+        <span>Today's tasks</span>
+        <strong><%= todaysTasks.length %></strong>
+    </div>
+    <div class="task-detail-kpi">
+        <span>Completed tasks</span>
+        <strong><%= completedTasks.length %></strong>
+    </div>
+</div>
+
+<section class="task-detail-panel">
+    <div class="task-detail-panel-header">
+        <div>
+            <h2>My assigned activities</h2>
+            <p>Your construction work and current progress.</p>
+        </div>
+    </div>
+
+    <% if (tasks.length === 0) { %>
+        <div class="empty-dashboard-state">
+            <h3>No tasks assigned yet</h3>
+            <p>Assigned construction activities will appear here.</p>
+        </div>
+    <% } else { %>
+        <div class="worker-task-list">
+            <% tasks.forEach(task => { %>
+                <article class="worker-task-card">
+                    <div class="worker-task-card-header">
+                        <div>
+                            <h3><%= task.name %></h3>
+                            <p>
+                                <%= task.project ? task.project.name : "Project unavailable" %>
+                            </p>
+                        </div>
+                        <span class="status-badge status-<%= task.status.toLowerCase() %>">
+                            <%= task.status.replace("_", " ") %>
+                        </span>
+                    </div>
+
+                    <div class="worker-task-meta">
+                        <span>Priority: <strong><%= task.priority %></strong></span>
+                        <span>
+                            Deadline:
+                            <strong>
+                                <%= new Date(task.deadline).toLocaleDateString("en-IN") %>
+                            </strong>
+                        </span>
+                    </div>
+
+                    <div class="worker-task-progress-row">
+                        <span>Progress</span>
+                        <strong><%= task.progress %>%</strong>
+                    </div>
+
+                    <div class="large-progress-bar">
+                        <div
+                            class="large-progress-fill"
+                            style="width: <%= task.progress %>%"
+                        ></div>
+                    </div>
+
+                    <div class="worker-task-actions">
+                        <a href="/worker/tasks/<%= task._id %>" class="page-action-button">
+                            View task details
+                        </a>
+                    </div>
+                </article>
+            <% }) %>
+        </div>
+    <% } %>
+</section>
+
+<section class="task-detail-panel">
+    <div class="task-detail-panel-header">
+        <div>
+            <h2>Upcoming deadlines</h2>
+            <p>Assigned activities due within the next seven days.</p>
+        </div>
+    </div>
+
+    <% if (upcomingDeadlines.length === 0) { %>
+        <p class="muted-text">No upcoming deadlines in the next seven days.</p>
+    <% } else { %>
+        <% upcomingDeadlines.forEach(task => { %>
+            <div class="task-info-item">
+                <span><%= task.name %></span>
+                <strong>
+                    <%= new Date(task.deadline).toLocaleDateString("en-IN") %>
+                </strong>
+            </div>
+        <% }) %>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

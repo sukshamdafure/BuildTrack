@@ -1,0 +1,140 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="notifications-page">
+    <div class="notifications-header">
+        <div>
+            <span class="page-eyebrow">Inbox</span>
+            <h1>Notifications</h1>
+            <p class="notifications-subtitle">
+                Stay updated on your projects and daily activities.
+            </p>
+        </div>
+
+        <div class="notifications-count">
+            <span>Unread notifications</span>
+            <strong><%= unreadCount %></strong>
+        </div>
+    </div>
+
+    <% if (unreadCount > 0) { %>
+        <div class="notifications-toolbar">
+            <form method="POST" action="/notifications/read-all">
+                <button
+                    type="submit"
+                    class="secondary-button"
+                >
+                    Mark all as read
+                </button>
+            </form>
+        </div>
+    <% } %>
+
+    <% if (notifications.length === 0) { %>
+        <div class="notifications-empty">
+            <h2>You're all caught up</h2>
+            <p>
+                New project updates and activity notifications
+                will appear here.
+            </p>
+        </div>
+    <% } else { %>
+        <div class="notifications-list">
+            <% notifications.forEach(notification => { %>
+                <article
+                    class="notification-card <%= notification.isRead ? 'is-read' : 'is-unread' %>"
+                >
+                    <div class="notification-card-content">
+                        <div class="notification-card-heading">
+                            <h2><%= notification.title %></h2>
+
+                            <% if (!notification.isRead) { %>
+                                <span class="notification-unread-dot"
+                                      aria-label="Unread notification"></span>
+                            <% } %>
+                        </div>
+
+                        <p class="notification-message">
+                            <%= notification.message %>
+                        </p>
+
+                        <div class="notification-meta">
+                            <span>
+                                <%= notification.type.replace(/_/g, " ") %>
+                            </span>
+
+                            <span>
+                                <%= new Date(notification.createdAt).toLocaleString("en-IN") %>
+                            </span>
+                        </div>
+
+                        <% if (
+    (
+        notification.type === "TASK_DEADLINE_APPROACHING" ||
+        notification.type === "TASK_OVERDUE" ||
+        notification.type === "TASK_ASSIGNED" ||
+        notification.type === "TASK_COMPLETED"
+    ) && notification.task
+) { %>
+
+    <% if (currentUser.role === "WORKER") { %>
+        <a
+            class="notification-open-link"
+            href="/worker/tasks/<%= notification.task %>"
+        >
+            View task &rarr;
+        </a>
+    <% } else if (currentUser.role === "ENGINEER") { %>
+        <a
+            class="notification-open-link"
+            href="/engineer/tasks/<%= notification.task %>"
+        >
+            View task &rarr;
+        </a>
+    <% } %>
+
+<% } else if (
+    notification.type === "PROJECT_UPDATE" &&
+    currentUser.role === "ENGINEER"
+) { %>
+
+    <a
+        class="notification-open-link"
+        href="/engineer/daily-reports"
+    >
+        View daily reports &rarr;
+    </a>
+
+<% } else if (currentUser.role === "CLIENT") { %>
+    <a
+        class="notification-open-link"
+        href="/client/dashboard"
+    >
+        View project dashboard &rarr;
+    </a>
+<%}%>
+                    </div>
+
+                    <% if (!notification.isRead) { %>
+                        <form
+                            method="POST"
+                            action="/notifications/<%= notification._id %>/read"
+                        >
+                            <button
+                                type="submit"
+                                class="notification-read-button"
+                            >
+                                Mark as read
+                            </button>
+                        </form>
+                    <% }else { %>
+                        <span class="notification-read-label">
+                            Read
+                        </span>
+                    <% } %>
+                </article>
+            <% }) %>
+        </div>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

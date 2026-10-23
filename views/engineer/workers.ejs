@@ -1,0 +1,77 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="engineer-workers-page">
+    <div class="engineer-workers-header">
+        <div>
+            <span class="page-eyebrow">Workforce</span>
+            <h1>Workers</h1>
+            <p class="engineer-workers-subtitle">
+                View worker details and their task assignments
+                across your projects.
+            </p>
+        </div>
+
+        <div class="engineer-workers-count">
+            <span>Active workers</span>
+            <strong><%= workers.length %></strong>
+        </div>
+    </div>
+
+    <% if (workers.length === 0) { %>
+        <div class="engineer-workers-empty">
+            <h2>No active workers found</h2>
+            <p>
+                Active worker accounts will appear here.
+            </p>
+        </div>
+    <% } else { %>
+        <div class="engineer-workers-table-wrap">
+            <table class="engineer-workers-table">
+                <thead>
+                    <tr>
+                        <th>Worker</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Total tasks</th>
+                        <th>Active tasks</th>
+                        <th>Completed tasks</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% workers.forEach(worker => { %>
+                        <tr>
+                            <td data-label="Worker">
+                                <strong>
+                                    <%= worker.name %>
+                                </strong>
+                            </td>
+
+                            <td data-label="Email">
+                                <%= worker.email %>
+                            </td>
+
+                            <td data-label="Phone">
+                                <%= worker.phone || "—" %>
+                            </td>
+
+                            <td data-label="Total tasks">
+                                <%= worker.totalTaskCount %>
+                            </td>
+
+                            <td data-label="Active tasks">
+                                <%= worker.activeTaskCount %>
+                            </td>
+
+                            <td data-label="Completed tasks">
+                                <%= worker.completedTaskCount %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

@@ -1,0 +1,105 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="client-milestones">
+  <div class="client-milestones__header">
+    <div>
+      <p class="client-milestones__eyebrow">PROJECT DELIVERY</p>
+      <h1>Milestones</h1>
+      <p class="client-milestones__subtitle">
+        Track important deadlines and completed project stages.
+      </p>
+    </div>
+  </div>
+
+  <div class="client-milestones__stats">
+    <article class="client-milestones__stat">
+      <span>Total milestones</span>
+      <strong><%= summary.total %></strong>
+    </article>
+    <article class="client-milestones__stat">
+      <span>Planned</span>
+      <strong><%= summary.planned %></strong>
+    </article>
+    <article class="client-milestones__stat">
+      <span>In progress</span>
+      <strong><%= summary.inProgress %></strong>
+    </article>
+    <article class="client-milestones__stat">
+      <span>Completed</span>
+      <strong><%= summary.completed %></strong>
+    </article>
+    <article class="client-milestones__stat">
+      <span>Delayed / overdue</span>
+      <strong><%= summary.delayed %></strong>
+    </article>
+  </div>
+
+  <div class="client-milestones__panel">
+    <div class="client-milestones__panel-header">
+      <div>
+        <h2>Project timeline</h2>
+        <p>Key stages and their current status</p>
+      </div>
+      <span class="client-milestones__count">
+        <%= milestones.length %> milestones
+      </span>
+    </div>
+
+    <% if (!milestones.length) { %>
+      <div class="client-milestones__empty">
+        <div class="client-milestones__empty-icon">◷</div>
+        <h3>No milestones yet</h3>
+        <p>
+          Milestones will appear here when your project team adds
+          important stages and target dates.
+        </p>
+      </div>
+    <% } else { %>
+      <div class="client-milestones__list">
+        <% milestones.forEach(function(milestone) { %>
+          <article class="client-milestones__item">
+            <div class="client-milestones__marker"></div>
+
+            <div class="client-milestones__content">
+              <div class="client-milestones__item-top">
+                <div>
+                  <h3><%= milestone.title %></h3>
+                  <p class="client-milestones__project">
+                    <%= milestone.projectName %>
+                  </p>
+                </div>
+
+                <span class="client-milestones__status client-milestones__status--<%= String(milestone.displayStatus).toLowerCase().replace(/_/g, "-") %>">
+                  <%= String(milestone.displayStatus).replace(/_/g, " ") %>
+                </span>
+              </div>
+
+              <% if (milestone.description) { %>
+                <p class="client-milestones__description">
+                  <%= milestone.description %>
+                </p>
+              <% } %>
+
+              <div class="client-milestones__dates">
+                <span>
+                  <strong>Target date:</strong>
+                  <%= milestone.dueDateLabel || "Not set" %>
+                </span>
+
+                <% if (milestone.displayStatus === "COMPLETED" && milestone.completedAtLabel) { %>
+                  <span>
+                    <strong>Completed:</strong>
+                    <%= milestone.completedAtLabel %>
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

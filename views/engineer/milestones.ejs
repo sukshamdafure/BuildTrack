@@ -1,0 +1,137 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="engineer-milestones">
+  <header class="engineer-milestones__header">
+    <div>
+      <p class="engineer-milestones__eyebrow">PROJECT DELIVERY</p>
+      <h1>Milestone Management</h1>
+      <p class="engineer-milestones__subtitle">
+        Plan important project stages, manage deadlines, and track completion.
+      </p>
+    </div>
+
+    <a href="/engineer/milestones/new" class="engineer-milestones__primary-btn">
+      <span aria-hidden="true">+</span> Create milestone
+    </a>
+  </header>
+
+  <div class="engineer-milestones__stats">
+    <article class="engineer-milestones__stat">
+      <span>Total milestones</span>
+      <strong><%= summary.total %></strong>
+    </article>
+
+    <article class="engineer-milestones__stat">
+      <span>Planned</span>
+      <strong><%= summary.planned %></strong>
+    </article>
+
+    <article class="engineer-milestones__stat">
+      <span>In progress</span>
+      <strong><%= summary.inProgress %></strong>
+    </article>
+
+    <article class="engineer-milestones__stat">
+      <span>Completed</span>
+      <strong><%= summary.completed %></strong>
+    </article>
+
+    <article class="engineer-milestones__stat">
+      <span>Delayed / overdue</span>
+      <strong><%= summary.delayed %></strong>
+    </article>
+  </div>
+
+  <section class="engineer-milestones__panel">
+    <div class="engineer-milestones__panel-header">
+      <div>
+        <h2>All milestones</h2>
+        <p>Milestones belonging to your assigned projects</p>
+      </div>
+
+      <span class="engineer-milestones__count">
+        <%= milestones.length %> total
+      </span>
+    </div>
+
+    <% if (!milestones.length) { %>
+      <div class="engineer-milestones__empty">
+        <div class="engineer-milestones__empty-icon" aria-hidden="true">◷</div>
+        <h3>No milestones created yet</h3>
+        <p>
+          Break your project into key stages, assign target dates,
+          and update each milestone as work progresses.
+        </p>
+        <a href="/engineer/milestones/new" class="engineer-milestones__primary-btn">
+          Create your first milestone
+        </a>
+      </div>
+    <% } else { %>
+      <div class="engineer-milestones__table-wrap">
+        <table class="engineer-milestones__table">
+          <thead>
+            <tr>
+              <th>Milestone</th>
+              <th>Project</th>
+              <th>Target date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% milestones.forEach(function(milestone) { %>
+              <tr>
+                <td>
+                  <div class="engineer-milestones__title">
+                    <%= milestone.title %>
+                  </div>
+                  <% if (milestone.description) { %>
+                    <div class="engineer-milestones__description">
+                      <%= milestone.description %>
+                    </div>
+                  <% } %>
+                </td>
+
+                <td>
+                  <span class="engineer-milestones__project">
+                    <%= milestone.projectName %>
+                  </span>
+                </td>
+
+                <td>
+                  <span class="engineer-milestones__date">
+                    <%= milestone.dueDateLabel %>
+                  </span>
+                  <% if (milestone.displayStatus === "COMPLETED" && milestone.completedAtLabel) { %>
+                    <small class="engineer-milestones__completed-date">
+                      Completed <%= milestone.completedAtLabel %>
+                    </small>
+                  <% } %>
+                </td>
+
+                <td>
+                  <span class="engineer-milestones__status engineer-milestones__status--<%= String(milestone.displayStatus).toLowerCase().replace(/_/g, "-") %>">
+                    <%= String(milestone.displayStatus).replace(/_/g, " ") %>
+                  </span>
+                </td>
+
+                <td>
+                  <a
+                    href="/engineer/milestones/<%= milestone._id %>/edit"
+                    class="engineer-milestones__edit-link"
+                  >
+                    Edit <span aria-hidden="true">→</span>
+                  </a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

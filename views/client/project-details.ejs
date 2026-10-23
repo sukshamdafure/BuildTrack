@@ -1,0 +1,156 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="client-project-overview">
+
+  <!-- Back navigation -->
+  <a class="client-overview-back" href="/client/projects">
+    <span aria-hidden="true">←</span>
+    All Projects
+  </a>
+
+  <!-- Project hero -->
+  <header class="client-project-hero">
+    <div class="client-project-hero-main">
+      <span class="client-eyebrow">PROJECT OVERVIEW</span>
+
+      <h1><%= project.displayName %></h1>
+
+      <p class="client-project-hero-location">
+        <span aria-hidden="true">⌖</span>
+        <%= project.displayLocation %>
+      </p>
+
+      <div class="client-project-hero-meta">
+        <span class="client-project-status">
+          <%= project.displayStatus %>
+        </span>
+        <span class="client-project-reference">
+          Project details and schedule
+        </span>
+      </div>
+    </div>
+
+    <div class="client-project-hero-progress">
+      <span>Overall completion</span>
+
+      <strong>
+        <%= project.displayProgress %><small>%</small>
+      </strong>
+
+      <div
+        class="client-project-large-progress"
+        role="progressbar"
+        aria-label="Overall project completion"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="<%= project.displayProgress %>"
+      >
+        <div
+          class="client-mini-progress-fill"
+          style="width: <%= project.displayProgress %>%"
+        ></div>
+      </div>
+
+      <p>Current recorded project progress</p>
+    </div>
+  </header>
+
+  <!-- Project information -->
+  <section class="client-overview-section">
+    <div class="client-section-heading">
+      <div>
+        <span class="client-eyebrow">PROJECT INFORMATION</span>
+        <h2>At a glance</h2>
+      </div>
+    </div>
+
+    <div class="client-project-info-grid">
+
+      <article class="client-project-info-card">
+        <span class="client-info-icon" aria-hidden="true">⌖</span>
+        <div>
+          <span class="client-info-label">Project location</span>
+          <strong><%= project.displayLocation %></strong>
+        </div>
+      </article>
+
+      <article class="client-project-info-card">
+        <span class="client-info-icon" aria-hidden="true">↗</span>
+        <div>
+          <span class="client-info-label">Start date</span>
+          <strong><%= project.startDateLabel %></strong>
+        </div>
+      </article>
+
+      <article class="client-project-info-card">
+        <span class="client-info-icon" aria-hidden="true">▣</span>
+        <div>
+          <span class="client-info-label">Expected completion</span>
+          <strong><%= project.endDateLabel %></strong>
+        </div>
+      </article>
+
+      <article class="client-project-info-card">
+        <span class="client-info-icon" aria-hidden="true">◷</span>
+        <div>
+          <span class="client-info-label">Current status</span>
+          <strong><%= project.displayStatus %></strong>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Links to dedicated sections -->
+  <section class="client-overview-section">
+    <div class="client-section-heading">
+      <div>
+        <span class="client-eyebrow">PROJECT ACTIVITY</span>
+        <h2>Explore project details</h2>
+        <p>Open a dedicated section for more information.</p>
+      </div>
+    </div>
+
+    <div class="client-project-section-grid">
+
+      <a class="client-project-section-card" href="/client/progress">
+        <span class="client-section-card-icon" aria-hidden="true">↗</span>
+        <div class="client-section-card-copy">
+          <h3>Progress & performance</h3>
+          <p>
+            Review task completion, delayed work, and progress across
+            your projects.
+          </p>
+        </div>
+        <span class="client-section-card-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="client-project-section-card" href="/client/milestones">
+        <span class="client-section-card-icon" aria-hidden="true">◇</span>
+        <div class="client-section-card-copy">
+          <h3>Project milestones</h3>
+          <p>
+            View target dates, milestone status, and completed stages.
+          </p>
+        </div>
+        <span class="client-section-card-arrow" aria-hidden="true">→</span>
+      </a>
+
+      <a class="client-project-section-card" href="/client/reports">
+        <span class="client-section-card-icon" aria-hidden="true">▤</span>
+        <div class="client-section-card-copy">
+          <h3>Daily work reports</h3>
+          <p>
+            Read site updates, work summaries, and construction
+            photographs.
+          </p>
+        </div>
+        <span class="client-section-card-arrow" aria-hidden="true">→</span>
+      </a>
+
+    </div>
+  </section>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

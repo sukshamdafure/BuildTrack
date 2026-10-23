@@ -1,0 +1,185 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="progress-review-page">
+
+    <header class="page-header">
+        <div>
+            <span class="page-eyebrow">CONSTRUCTION MONITORING</span>
+            <h1>Worker Progress Reviews</h1>
+            <p>
+                Review reported site work before updating verified
+                construction progress.
+            </p>
+        </div>
+    </header>
+
+    <% if (submissions.length === 0) { %>
+
+        <div class="progress-review-empty">
+            <h2>No pending submissions</h2>
+            <p>
+                Worker progress submissions awaiting review
+                will appear here.
+            </p>
+        </div>
+
+    <% } else { %>
+
+        <div class="progress-review-list">
+
+            <% submissions.forEach(submission => { %>
+
+                <% if (submission.task && submission.project && submission.worker) { %>
+
+                    <article class="progress-review-card">
+
+                        <div class="progress-review-heading">
+                            <div>
+                                <span class="progress-review-project">
+                                    <%= submission.project.name %>
+                                </span>
+
+                                <h2><%= submission.task.name %></h2>
+
+                                <p>
+                                    Submitted by
+                                    <strong>
+                                        <%= submission.worker.name %>
+                                    </strong>
+                                </p>
+                            </div>
+
+                            <span class="progress-review-status">
+                                PENDING REVIEW
+                            </span>
+                        </div>
+
+                        <div class="progress-review-metrics">
+
+                            <div>
+                                <span>Previous verified progress</span>
+                                <strong>
+                                    <%= submission.previousProgress %>%
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Proposed progress</span>
+                                <strong>
+                                    <%= submission.proposedProgress %>%
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span>Submitted on</span>
+                                <strong>
+                                    <%= new Date(
+                                        submission.createdAt
+                                    ).toLocaleDateString("en-IN") %>
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div class="progress-review-comparison">
+                            <div class="progress-review-bar">
+                                <div
+                                    class="progress-review-bar-fill"
+                                    style="width: <%= Math.min(
+                                        100,
+                                        Math.max(
+                                            0,
+                                            submission.previousProgress
+                                        )
+                                    ) %>%"
+                                ></div>
+                            </div>
+
+                            <div class="progress-review-bar proposed">
+                                <div
+                                    class="progress-review-bar-fill"
+                                    style="width: <%= Math.min(
+                                        100,
+                                        Math.max(
+                                            0,
+                                            submission.proposedProgress
+                                        )
+                                    ) %>%"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-review-remarks">
+                            <h3>Worker's site remarks</h3>
+                            <p><%= submission.remarks %></p>
+                        </div>
+
+                        <div class="progress-review-actions">
+
+                            <form
+                                method="POST"
+                                action="/engineer/progress-reviews/<%= submission._id %>/approve"
+                                class="progress-review-form"
+                            >
+                                <label for="approve-<%= submission._id %>">
+                                    Approval remarks (optional)
+                                </label>
+
+                                <textarea
+                                    id="approve-<%= submission._id %>"
+                                    name="reviewRemarks"
+                                    rows="2"
+                                    maxlength="1000"
+                                    placeholder="Record verification observations..."
+                                ></textarea>
+
+                                <button
+                                    type="submit"
+                                    class="page-action-button"
+                                >
+                                    Approve Progress
+                                </button>
+                            </form>
+
+                            <form
+                                method="POST"
+                                action="/engineer/progress-reviews/<%= submission._id %>/reject"
+                                class="progress-review-form"
+                            >
+                                <label for="reject-<%= submission._id %>">
+                                    Reason for rejection
+                                </label>
+
+                                <textarea
+                                    id="reject-<%= submission._id %>"
+                                    name="reviewRemarks"
+                                    rows="2"
+                                    maxlength="1000"
+                                    required
+                                    placeholder="Explain what needs correction..."
+                                ></textarea>
+
+                                <button
+                                    type="submit"
+                                    class="page-action-button danger-button"
+                                >
+                                    Reject Submission
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </article>
+
+                <% } %>
+
+            <% }) %>
+
+        </div>
+
+    <% } %>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

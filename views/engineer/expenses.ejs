@@ -1,0 +1,120 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+    <div>
+        <span class="page-eyebrow">FINANCIAL MANAGEMENT</span>
+        <h1>Project Expenses</h1>
+    </div>
+
+    <div class="page-header-actions">
+        <a href="/engineer/expenses/new" class="page-action-button">
+            + Record Expense
+        </a>
+    </div>
+</div>
+
+<div class="task-summary-grid">
+    <div class="task-summary-card">
+        <span>Total Expenses count</span>
+        <strong><%= summary.totalExpenses %></strong>
+    </div>
+
+    <div class="task-summary-card">
+        <span>Total Expenses</span>
+        <strong>₹<%= Number(summary.totalAmount).toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }) %></strong>
+    </div>
+</div>
+
+<section class="dashboard-section">
+    <div class="section-header">
+        <div>
+            <h2>Expense Records</h2>
+        </div>
+    </div>
+
+    <% if (!projects || projects.length === 0) { %>
+        <div class="empty-dashboard-state">
+            <h3>No projects available</h3>
+            <p>Create a project before recording expenses.</p>
+            <a href="/engineer/projects/new" class="page-action-button">
+                Create Project
+            </a>
+        </div>
+    <% } else if (expenses.length === 0) { %>
+        <div class="empty-dashboard-state">
+            <h3>No expenses recorded yet</h3>
+            <p>Record your first project expense to start tracking spending.</p>
+            <a href="/engineer/expenses/new" class="page-action-button">
+                Record First Expense
+            </a>
+        </div>
+    <% } else { %>
+        <div class="task-table-wrapper">
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Recorded By</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% expenses.forEach(expense => { %>
+                        <tr>
+                            <td>
+                                <%= new Date(expense.date).toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric"
+                                }) %>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    <%= expense.project
+                                        ? expense.project.name
+                                        : "Project unavailable" %>
+                                </strong>
+                            </td>
+
+                            <td>
+                                <span class="expense-category">
+                                    <%= expense.category.replace(/_/g, " ") %>
+                                </span>
+                            </td>
+
+                            <td>
+                                <%= expense.description || "—" %>
+                            </td>
+
+                            <td>
+                                <%= expense.recordedBy
+                                    ? expense.recordedBy.name
+                                    : "—" %>
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹<%= Number(expense.amount).toLocaleString("en-IN", {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    }) %>
+                                </strong>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

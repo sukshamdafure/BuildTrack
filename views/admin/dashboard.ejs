@@ -1,0 +1,41 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+    <div>
+        <span class="page-eyebrow">Administration</span>
+        <h1>Admin dashboard</h1>
+        <p>
+            Welcome back, <strong><%= currentUser.name %></strong>.
+            Manage BuildTrack users, projects, and system-level information.
+        </p>
+    </div>
+</div>
+
+<section class="dashboard-section">
+    <div class="section-header">
+        <div>
+            <h2>Workspace</h2>
+            <p>Use the sidebar to move between administrative areas.</p>
+        </div>
+    </div>
+
+    <div class="admin-link-grid">
+        <a class="admin-link-card" href="/admin/users">
+            <span class="page-eyebrow">Directory</span>
+            <strong>Users</strong>
+            <span>Review accounts across engineer, worker, client, and admin roles.</span>
+        </a>
+        <a class="admin-link-card" href="/admin/projects">
+            <span class="page-eyebrow">Portfolio</span>
+            <strong>Projects</strong>
+            <span>Inspect construction projects and assignment coverage.</span>
+        </a>
+        <a class="admin-link-card" href="/notifications">
+            <span class="page-eyebrow">Alerts</span>
+            <strong>Notifications</strong>
+            <span>Open system notices and unread activity.</span>
+        </a>
+    </div>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

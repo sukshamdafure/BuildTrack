@@ -1,0 +1,94 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="worker-history-page">
+    <div class="worker-history-header">
+        <div>
+            <h1>My Progress Updates</h1>
+            <p>
+                Track your submitted task progress and engineering review decisions.
+            </p>
+        </div>
+
+        <span class="worker-history-count">
+            Total updates: <%= updates.length %>
+        </span>
+    </div>
+
+    <% if (updates.length === 0) { %>
+        <div class="worker-history-empty">
+            <h2>No progress updates submitted yet</h2>
+            <p>
+                Open an assigned task to submit a progress update for engineer review.
+            </p>
+
+            <a href="/worker/tasks" class="page-action-button">
+                View My Tasks
+            </a>
+        </div>
+    <% } else { %>
+        <div class="worker-history-table-wrap">
+            <table class="worker-history-table">
+                <thead>
+                    <tr>
+                        <th>Submitted</th>
+                        <th>Project</th>
+                        <th>Task</th>
+                        <th>Previous Progress</th>
+                        <th>Proposed Progress</th>
+                        <th>Review Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% updates.forEach(update => { %>
+                        <tr>
+                            <td data-label="Submitted">
+                                <%= update.createdAt
+                                    ? new Date(update.createdAt).toLocaleDateString("en-IN")
+                                    : "—" %>
+                            </td>
+
+                            <td data-label="Project">
+                                <%= update.project?.name || "Project unavailable" %>
+                            </td>
+
+                            <td data-label="Task">
+                                <%= update.task?.name || "Task unavailable" %>
+                            </td>
+
+                            <td data-label="Previous Progress">
+                                <%= update.previousProgress ?? 0 %>%
+                            </td>
+
+                            <td data-label="Proposed Progress">
+                                <%= update.proposedProgress ?? 0 %>%
+                            </td>
+
+                            <td data-label="Review Status">
+                                <span class="worker-history-status">
+                                    <%= update.status %>
+                                </span>
+                            </td>
+
+                            <td data-label="Action">
+                                <% if (update.task?._id) { %>
+                                    <a
+                                        class="page-action-button"
+                                        href="/worker/tasks/<%= update.task._id %>"
+                                    >
+                                        View Task
+                                    </a>
+                                <% } else { %>
+                                    <span>Unavailable</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

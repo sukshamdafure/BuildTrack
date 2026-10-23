@@ -1,0 +1,159 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="engineer-milestone-form-page">
+  <header class="engineer-milestone-form-page__header">
+    <a href="/engineer/milestones" class="engineer-milestone-form-page__back">
+      <span aria-hidden="true">←</span> Back to milestones
+    </a>
+
+    <p class="engineer-milestones__eyebrow">PROJECT DELIVERY</p>
+
+    <h1>
+      <%= mode === "edit" ? "Edit milestone" : "Create a milestone" %>
+    </h1>
+
+    <p>
+      <%= mode === "edit"
+        ? "Update the milestone details, target date, or current status."
+        : "Define a key project stage and give your team a clear target date." %>
+    </p>
+  </header>
+
+  <div class="engineer-milestone-form-page__layout">
+    <section class="engineer-milestone-form-card">
+      <% if (errors && errors.length) { %>
+        <div class="engineer-milestone-form__errors" role="alert">
+          <strong>Please check the following:</strong>
+          <ul>
+            <% errors.forEach(function(error) { %>
+              <li><%= error %></li>
+            <% }); %>
+          </ul>
+        </div>
+      <% } %>
+
+      <% if (!projects.length) { %>
+        <div class="engineer-milestone-form__notice">
+          No projects are currently assigned to your account.
+          A milestone can be created after a project is assigned to you.
+        </div>
+      <% } %>
+
+      <form
+        method="POST"
+        action="<%= mode === 'edit' ? '/engineer/milestones/' + milestone._id : '/engineer/milestones' %>"
+        class="engineer-milestone-form"
+      >
+        <div class="engineer-milestone-form__field">
+          <label for="title">Milestone title <span>*</span></label>
+          <input
+            id="title"
+            name="title"
+            type="text"
+            maxlength="150"
+            required
+            value="<%= milestone.title || '' %>"
+            placeholder="e.g. Foundation work completed"
+          >
+          <small>Choose a short, recognizable name for this stage.</small>
+        </div>
+
+        <div class="engineer-milestone-form__field">
+          <label for="project">Project <span>*</span></label>
+          <select id="project" name="project" required <%= !projects.length ? "disabled" : "" %>>
+            <option value="">Select an assigned project</option>
+            <% projects.forEach(function(project) { %>
+              <option
+                value="<%= project._id %>"
+                <%= String(project._id) === String(milestone.project || "") ? "selected" : "" %>
+              >
+                <%= project.name || project.projectName || project.title || "Untitled project" %>
+              </option>
+            <% }); %>
+          </select>
+          <small>Only projects assigned to you are available.</small>
+        </div>
+
+        <div class="engineer-milestone-form__field">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="4"
+            maxlength="1000"
+            placeholder="Describe what needs to be achieved for this milestone..."
+          ><%= milestone.description || "" %></textarea>
+          <small>Optional. Explain the expected outcome or deliverable.</small>
+        </div>
+
+        <div class="engineer-milestone-form__row">
+          <div class="engineer-milestone-form__field">
+            <label for="dueDate">Target date <span>*</span></label>
+            <input
+              id="dueDate"
+              name="dueDate"
+              type="date"
+              required
+              value="<%= milestone.dueDate || '' %>"
+            >
+          </div>
+
+          <div class="engineer-milestone-form__field">
+            <label for="status">Status <span>*</span></label>
+            <select id="status" name="status" required>
+              <% statuses.forEach(function(status) { %>
+                <option
+                  value="<%= status %>"
+                  <%= String(milestone.status || "UPCOMING") === status ? "selected" : "" %>
+                >
+                  <%= status.replace(/_/g, " ") %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+
+        <div class="engineer-milestone-form__footer">
+          <a href="/engineer/milestones" class="engineer-milestone-form__cancel">
+            Cancel
+          </a>
+
+          <button
+            type="submit"
+            class="engineer-milestones__primary-btn"
+            <%= !projects.length ? "disabled" : "" %>
+          >
+            <%= mode === "edit" ? "Save changes" : "Create milestone" %>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- <aside class="engineer-milestone-form-help">
+      <div class="engineer-milestone-form-help__icon" aria-hidden="true">✓</div>
+      <h2>Make milestones meaningful</h2>
+      <p>
+        Use a milestone for a significant deliverable or stage,
+        rather than for every small task.
+      </p>
+
+      <div class="engineer-milestone-form-help__tip">
+        <strong>Target date</strong>
+        <span>Set a realistic date that your team can work toward.</span>
+      </div>
+
+      <div class="engineer-milestone-form-help__tip">
+        <strong>Status</strong>
+        <span>Update the status as the project stage progresses.</span>
+      </div>
+
+      <div class="engineer-milestone-form-help__tip">
+        <strong>Client visibility</strong>
+        <span>Saved milestones will appear on the Client Milestones page for the related project.</span>
+      </div>
+    </aside> -->
+  </div>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

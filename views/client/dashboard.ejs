@@ -1,0 +1,291 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<%
+  const clientName =
+    user?.name ||
+    user?.fullName ||
+    user?.username ||
+    "there";
+
+  const projectList = Array.isArray(projects) ? projects : [];
+  const delayedCount = Number(summary?.delayedTasks || 0);
+  const completedCount = Number(summary?.completedTasks || 0);
+  const totalTaskCount = Number(summary?.totalTasks || 0);
+
+  const taskCompletion = totalTaskCount > 0
+    ? Math.round((completedCount / totalTaskCount) * 100)
+    : 0;
+%>
+
+<section class="client-home">
+
+  <!-- Welcome header -->
+  <header class="client-home-hero">
+    <div class="client-home-hero-content">
+      <span class="client-eyebrow">YOUR CONSTRUCTION OVERVIEW</span>
+
+      <h1>Welcome back, <%= clientName %></h1>
+
+      <p>
+        Keep track of your projects, monitor progress, and stay informed
+        about what's happening on site.
+      </p>
+
+      <div class="client-home-actions">
+        <a href="/client/projects" class="client-primary-button">
+          Explore Projects
+          <span aria-hidden="true">→</span>
+        </a>
+
+        <a href="/client/reports" class="client-secondary-button">
+          View Reports
+        </a>
+      </div>
+    </div>
+
+    <div class="client-hero-mark" aria-hidden="true">
+      <span class="client-hero-mark-top">BUILDTRACK</span>
+      <span class="client-hero-mark-number">
+        <%= String(summary.totalProjects).padStart(2, "0") %>
+      </span>
+      <span class="client-hero-mark-bottom">YOUR PROJECTS</span>
+    </div>
+  </header>
+
+  <!-- Key metrics -->
+  <section class="client-home-section">
+    <div class="client-section-heading">
+      <div>
+        <span class="client-eyebrow">AT A GLANCE</span>
+        <h2>Your overview</h2>
+      </div>
+      <span class="client-updated-label">Project summary</span>
+    </div>
+
+    <div class="client-metrics-grid">
+
+      <article class="client-metric-card client-metric-featured">
+        <div class="client-metric-topline">
+          <span class="client-metric-label">Total projects</span>
+          <span class="client-metric-symbol" aria-hidden="true">P</span>
+        </div>
+
+        <strong class="client-metric-value">
+          <%= summary.totalProjects %>
+        </strong>
+
+        <span class="client-metric-caption">
+          Projects associated with your account
+        </span>
+      </article>
+
+      <article class="client-metric-card">
+        <div class="client-metric-topline">
+          <span class="client-metric-label">Completed projects</span>
+          <span class="client-metric-symbol" aria-hidden="true">✓</span>
+        </div>
+
+        <strong class="client-metric-value">
+          <%= summary.completedProjects %>
+        </strong>
+
+        <span class="client-metric-caption">
+          Projects marked completed
+        </span>
+      </article>
+
+      <article class="client-metric-card">
+        <div class="client-metric-topline">
+          <span class="client-metric-label">Task completion</span>
+          <span class="client-metric-symbol" aria-hidden="true">%</span>
+        </div>
+
+        <strong class="client-metric-value">
+          <%= taskCompletion %><span class="client-metric-unit">%</span>
+        </strong>
+
+        <div
+          class="client-mini-progress"
+          role="progressbar"
+          aria-label="Task completion rate"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="<%= taskCompletion %>"
+        >
+          <div
+            class="client-mini-progress-fill"
+            style="width: <%= taskCompletion %>%"
+          ></div>
+        </div>
+
+        <span class="client-metric-caption">
+          <%= completedCount %> of <%= totalTaskCount %> tasks completed
+        </span>
+      </article>
+
+      <article class="client-metric-card <%= delayedCount > 0 ? 'client-metric-attention' : '' %>">
+        <div class="client-metric-topline">
+          <span class="client-metric-label">Delayed tasks</span>
+          <span class="client-metric-symbol" aria-hidden="true">!</span>
+        </div>
+
+        <strong class="client-metric-value">
+          <%= delayedCount %>
+        </strong>
+
+        <span class="client-metric-caption">
+          <%= delayedCount > 0
+            ? "Tasks that need attention"
+            : "No tasks currently marked delayed" %>
+        </span>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Project snapshot -->
+  <section class="client-home-section">
+    <div class="client-section-heading">
+      <div>
+        <span class="client-eyebrow">YOUR PORTFOLIO</span>
+        <h2>Project snapshot</h2>
+        <p>A quick look at your recent projects.</p>
+      </div>
+
+      <a class="client-text-link" href="/client/projects">
+        All projects <span aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <% if (projectList.length === 0) { %>
+
+      <div class="client-home-empty">
+        <h3>Your project space is ready</h3>
+        <p>
+          Once projects are associated with your account, you'll see
+          their progress and schedule here.
+        </p>
+      </div>
+
+    <% } else { %>
+
+      <div class="client-project-snapshot-list">
+
+        <% projectList.slice(0, 3).forEach((project, index) => { %>
+
+          <article class="client-project-snapshot">
+
+            <div class="client-project-index" aria-hidden="true">
+              <%= String(index + 1).padStart(2, "0") %>
+            </div>
+
+            <div class="client-snapshot-main">
+              <div class="client-snapshot-title-row">
+                <h3><%= project.name %></h3>
+
+                <span class="client-project-status">
+                  <%= project.status %>
+                </span>
+              </div>
+
+              <span class="client-snapshot-location">
+                <%= project.location || "Location not specified" %>
+              </span>
+
+              <div class="client-snapshot-progress-row">
+                <span>Overall progress</span>
+                <strong><%= project.progress %>%</strong>
+              </div>
+
+              <div
+                class="client-mini-progress"
+                role="progressbar"
+                aria-label="Project progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="<%= project.progress %>"
+              >
+                <div
+                  class="client-mini-progress-fill"
+                  style="width: <%= project.progress %>%"
+                ></div>
+              </div>
+            </div>
+
+            <div class="client-snapshot-stats">
+              <span><%= project.completedTasks %> / <%= project.totalTasks %></span>
+              <small>Tasks completed</small>
+            </div>
+
+            <a
+              class="client-snapshot-link"
+              href="/client/projects/<%= project._id %>"
+              aria-label="View <%= project.name %>"
+            >
+              <span aria-hidden="true">→</span>
+            </a>
+
+          </article>
+
+        <% }) %>
+
+      </div>
+
+    <% } %>
+  </section>
+
+  <!-- Attention and navigation -->
+  <section class="client-home-bottom-grid">
+
+    <article class="client-attention-card">
+      <span class="client-eyebrow">PROJECT WATCH</span>
+
+      <% if (delayedCount > 0) { %>
+        <h2>Some tasks need attention</h2>
+        <p>
+          <strong><%= delayedCount %></strong>
+          task(s) are currently marked delayed. Review project progress
+          to see the affected work.
+        </p>
+
+        <a class="client-text-link" href="/client/progress">
+          Review progress <span aria-hidden="true">→</span>
+        </a>
+      <% } else { %>
+        <h2>You're up to date</h2>
+        <p>
+          No tasks are currently marked delayed in the projects shown
+          in this overview.
+        </p>
+
+        <a class="client-text-link" href="/client/progress">
+          View project progress <span aria-hidden="true">→</span>
+        </a>
+      <% } %>
+    </article>
+
+    <article class="client-quick-links-card">
+      <span class="client-eyebrow">EXPLORE BUILDTRACK</span>
+      <h2>Go to a section</h2>
+
+      <a class="client-quick-link" href="/client/progress">
+        <span>Progress and performance</span>
+        <span aria-hidden="true">→</span>
+      </a>
+
+      <a class="client-quick-link" href="/client/milestones">
+        <span>Milestone schedule</span>
+        <span aria-hidden="true">→</span>
+      </a>
+
+      <a class="client-quick-link" href="/client/reports">
+        <span>Daily site reports</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </article>
+
+  </section>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

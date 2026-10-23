@@ -1,0 +1,141 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="worker-progress-page">
+
+    <a href="/worker/tasks/<%= task._id %>"
+       class="worker-back-link">
+        &larr; Back to Task Details
+    </a>
+
+    <header class="worker-progress-page-header">
+        <span class="page-eyebrow">WORKER PORTAL</span>
+        <h1>Submit Work Progress</h1>
+        <p>
+            <%= task.name %>
+            <% if (task.project) { %>
+                — <%= task.project.name %>
+            <% } %>
+        </p>
+    </header>
+
+    <% if (pendingSubmission) { %>
+
+        <div class="worker-pending-notice">
+            <h2>Update awaiting review</h2>
+            <p>
+                You already submitted
+                <strong><%= pendingSubmission.proposedProgress %>%</strong>
+                progress. The Engineer must review that submission
+                before you can submit another one.
+            </p>
+            <p>
+                Submitted:
+                <%= new Date(
+                    pendingSubmission.createdAt
+                ).toLocaleString("en-IN") %>
+            </p>
+        </div>
+
+    <% } else { %>
+
+        <div class="worker-progress-form-card">
+
+            <div class="worker-current-progress">
+                <span>Current verified progress</span>
+                <strong><%= task.progress || 0 %>%</strong>
+            </div>
+
+            <div class="worker-progress-track">
+                <div
+                    class="worker-progress-fill"
+                    style="width: <%= Math.min(
+                        100,
+                        Math.max(0, Number(task.progress) || 0)
+                    ) %>%"
+                ></div>
+            </div>
+
+            <% if (typeof submitted !== "undefined" && submitted) { %>
+                <p class="worker-success-message">
+                    Your progress update has been submitted.
+                </p>
+            <% } %>
+
+            <form
+                method="POST"
+                action="/worker/tasks/<%= task._id %>/progress"
+                class="worker-progress-form"
+            >
+
+                <div class="worker-form-group">
+                    <label for="progress">
+                        Proposed completion percentage
+                    </label>
+
+                    <div class="worker-progress-input-row">
+                        <input
+                            type="number"
+                            id="progress"
+                            name="progress"
+                            min="<%= task.progress || 0 %>"
+                            max="100"
+                            step="1"
+                            value="<%= task.progress || 0 %>"
+                            required
+                        >
+
+                        <span>%</span>
+                    </div>
+
+                    <small>
+                        Enter a value from
+                        <%= task.progress || 0 %>% to 100%.
+                        The Engineer will verify your submission.
+                    </small>
+                </div>
+
+                <div class="worker-form-group">
+                    <label for="remarks">
+                        Work performed and site remarks
+                    </label>
+
+                    <textarea
+                        id="remarks"
+                        name="remarks"
+                        rows="5"
+                        maxlength="2000"
+                        placeholder="Describe the construction work completed, quantities achieved, site conditions, or any issues encountered..."
+                        required
+                    ></textarea>
+
+                    <small>
+                        Maximum 2000 characters.
+                    </small>
+                </div>
+
+                <div class="worker-progress-form-actions">
+                    <a
+                        href="/worker/tasks/<%= task._id %>"
+                        class="worker-cancel-link"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="page-action-button"
+                    >
+                        Submit for Engineer Review
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    <% } %>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

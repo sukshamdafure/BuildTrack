@@ -1,0 +1,92 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="engineer-reports-page">
+  <div class="engineer-reports-header">
+    <div>
+      <h1>Daily Progress Reports</h1>
+      <p class="engineer-reports-subtitle">
+        Review daily work submissions from Workers across your projects.
+      </p>
+    </div>
+
+    <div class="engineer-reports-count">
+      <span>Total reports</span>
+      <strong><%= reports.length %></strong>
+    </div>
+  </div>
+
+  <% if (reports.length === 0) { %>
+    <div class="engineer-reports-empty">
+      <h2>No daily reports yet</h2>
+      <p>
+        Daily reports submitted for your projects will appear here.
+      </p>
+    </div>
+  <% } else { %>
+    <div class="engineer-reports-table-wrap">
+      <table class="engineer-reports-table">
+        <thead>
+          <tr>
+            <th>Report date</th>
+            <th>Project</th>
+            <th>Task</th>
+            <th>Worker</th>
+            <th>Status</th>
+            <th>View</th>
+            <th>Download</th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+          <% reports.forEach(report => { %>
+            <tr>
+              <td data-label="Report date">
+                <%= report.reportDateLabel %>
+              </td>
+
+              <td data-label="Project">
+                <%= report.projectLabel %>
+              </td>
+
+              <td data-label="Task">
+                <%= report.taskLabel %>
+              </td>
+
+              <td data-label="Worker">
+                <%= report.workerLabel %>
+              </td>
+
+              <td data-label="Status">
+                <span class="engineer-report-status">
+                  <%= report.status %>
+                </span>
+              </td>
+
+              <td data-label="View">
+                <a
+                  class="page-action-button"
+                  href="/engineer/daily-reports/<%= report._id %>"
+                >
+                  View report
+                </a>
+              </td>
+
+              <td data-label="Download">
+                <a
+                  class="secondary-button"
+                  href="/engineer/daily-reports/<%= report._id %>/pdf"
+                >
+                  Downlode report
+                </a>
+              </td>
+
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

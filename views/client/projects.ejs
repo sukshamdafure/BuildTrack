@@ -1,0 +1,133 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="client-dashboard">
+
+  <!-- Page Header -->
+  <header class="client-dashboard-header">
+    <div>
+      <h1>My Projects</h1>
+      <p>
+        View your construction projects and their current progress.
+      </p>
+    </div>
+
+    <span class="client-project-count">
+      <%= projects.length %> project(s)
+    </span>
+  </header>
+
+  <!-- Project List -->
+  <% if (projects.length === 0) { %>
+
+    <div class="client-empty-state">
+      <h3>No Projects Assigned Yet</h3>
+      <p>
+        Projects associated with your account will appear here.
+      </p>
+    </div>
+
+  <% } else { %>
+
+    <div class="client-project-grid">
+
+      <% projects.forEach(project => { %>
+
+        <article class="client-project-card">
+
+          <!-- Project Name and Status -->
+          <div class="client-project-card-header">
+            <h3>
+              <%= project.displayName %>
+            </h3>
+
+            <span class="client-project-status">
+              <%= project.displayStatus %>
+            </span>
+          </div>
+
+          <!-- Location -->
+          <p class="client-project-location">
+            <%= project.displayLocation %>
+          </p>
+
+          <!-- Progress -->
+          <div class="client-project-progress-heading">
+            <span>Project Progress</span>
+
+            <strong>
+              <%= project.displayProgress %>%
+            </strong>
+          </div>
+
+          <div
+            class="client-progress-track"
+            role="progressbar"
+            aria-label="Project progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="<%= project.displayProgress %>"
+          >
+            <div
+              class="client-progress-fill"
+              style="width: <%= project.displayProgress %>%"
+            ></div>
+          </div>
+
+          <!-- Task Summary -->
+          <div class="client-project-task-stats">
+
+            <div>
+              <span>Total Tasks</span>
+              <strong><%= project.totalTasks %></strong>
+            </div>
+
+            <div>
+              <span>Completed</span>
+              <strong><%= project.completedTasks %></strong>
+            </div>
+
+            <div>
+              <span>Delayed</span>
+              <strong><%= project.delayedTasks %></strong>
+            </div>
+
+          </div>
+
+          <!-- Project Dates -->
+          <div class="client-project-dates">
+
+            <div>
+              <span>Start Date</span>
+              <strong>
+                <%= project.startDateLabel %>
+              </strong>
+            </div>
+
+            <div>
+              <span>Expected Completion</span>
+              <strong>
+                <%= project.endDateLabel %>
+              </strong>
+            </div>
+
+          </div>
+
+          <!-- View Project Details -->
+          <a
+            class="page-action-button client-view-project-button"
+            href="/client/projects/<%= project._id %>"
+          >
+            View Project Details
+          </a>
+
+        </article>
+
+      <% }) %>
+
+    </div>
+
+  <% } %>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

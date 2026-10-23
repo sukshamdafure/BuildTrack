@@ -1,0 +1,272 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="worker-daily-report-page">
+
+    <a
+        href="/worker/tasks/<%= task._id %>"
+        class="worker-back-link"
+    >
+        &larr; Back to Task Details
+    </a>
+
+    <header class="worker-daily-report-header">
+        <span class="page-eyebrow">WORKER PORTAL</span>
+        <h1>Daily Work Report</h1>
+        <p>
+            <strong><%= task.name %></strong>
+            <% if (task.project) { %>
+                — <%= task.project.name %>
+            <% } %>
+        </p>
+    </header>
+
+    <% if (reqQuerySubmitted) { %>
+        <div class="worker-report-notice">
+            Your daily work report was submitted for Engineer review.
+        </div>
+    <% } %>
+
+    <div class="worker-daily-report-card">
+
+        <form
+    method="POST"
+    action="/worker/tasks/<%= task._id %>/daily-report"
+    class="worker-daily-report-form"
+    enctype="multipart/form-data"
+>
+
+            <div class="worker-form-group">
+                <label for="reportDate">Report Date *</label>
+
+                <input
+                    type="date"
+                    id="reportDate"
+                    name="reportDate"
+                    max="<%= new Date().toISOString().slice(0, 10) %>"
+                    value="<%= new Date().toISOString().slice(0, 10) %>"
+                    required
+                >
+            </div>
+
+            <div class="worker-form-group">
+                <label for="workPerformed">Work Performed *</label>
+
+                <textarea
+                    id="workPerformed"
+                    name="workPerformed"
+                    rows="5"
+                    maxlength="5000"
+                    placeholder="Describe the construction activities completed today..."
+                    required
+                ></textarea>
+            </div>
+
+
+
+
+            <div class="worker-form-group">
+                <label for="labourCount">Labour Count *</label>
+
+                <input
+                    type="number"
+                    id="labourCount"
+                    name="labourCount"
+                    min="0"
+                    max="10000"
+                    step="1"
+                    value="0"
+                    required
+                >
+
+                <small>
+                    Enter the total number of workers involved in the reported work.
+                </small>
+            </div>
+
+            <div class="worker-form-group">
+                <label for="materialsUsed">Materials Used</label>
+
+                <textarea
+                    id="materialsUsed"
+                    name="materialsUsed"
+                    rows="3"
+                    maxlength="3000"
+                    placeholder="Example: Cement — 12 bags; sand — 2 cubic metres..."
+                ></textarea>
+            </div>
+
+
+<div class="worker-form-group">
+    <label for="photos">Construction Site Photos</label>
+
+    <input
+        type="file"
+        id="photos"
+        name="photos"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+    >
+
+    <small>
+        Upload up to 5 photos. JPEG, PNG and WebP are supported.
+        Each image must be 5 MB or smaller.
+    </small>
+
+    <div
+        id="photoPreview"
+        class="worker-photo-preview"
+    ></div>
+</div>
+
+
+            <div class="worker-form-group">
+                <label for="issues">Site Issues</label>
+
+                <textarea
+                    id="issues"
+                    name="issues"
+                    rows="3"
+                    maxlength="3000"
+                    placeholder="Report delays, shortages, equipment problems or safety concerns..."
+                ></textarea>
+            </div>
+
+            <div class="worker-form-group">
+                <label for="remarks">Additional Remarks</label>
+
+                <textarea
+                    id="remarks"
+                    name="remarks"
+                    rows="3"
+                    maxlength="3000"
+                    placeholder="Additional observations or handover notes..."
+                ></textarea>
+            </div>
+
+            <div class="worker-daily-report-actions">
+                <a
+                    href="/worker/tasks/<%= task._id %>"
+                    class="worker-cancel-link"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="page-action-button"
+                >
+                    Submit Daily Report
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <section class="worker-report-history">
+        <h2>Recent Reports for This Task</h2>
+
+        <% if (reports.length === 0) { %>
+
+            <p class="worker-report-muted">
+                You haven't submitted any reports for this task yet.
+            </p>
+
+        <% } else { %>
+
+            <div class="worker-report-history-list">
+
+                <% reports.forEach(report => { %>
+
+                    <article class="worker-report-history-card">
+
+                        <div class="worker-report-history-heading">
+                            <strong>
+                                <%= new Date(
+                                    report.reportDate
+                                ).toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    timeZone: "UTC"
+                                }) %>
+                            </strong>
+
+                            <span class="worker-report-status">
+                                <%= report.status %>
+                            </span>
+                        </div>
+
+                        <p><%= report.workPerformed %></p>
+
+                        <% if (report.photos && report.photos.length) { %>
+
+    <div class="worker-report-photos">
+        <% report.photos.forEach(photo => { %>
+            <a
+                href="<%= photo.url %>"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <img
+                    src="<%= photo.url %>"
+                    alt="Construction site photo"
+                    loading="lazy"
+                >
+            </a>
+        <% }) %>
+    </div>
+
+<% } %>
+
+                        <small>
+                            Labour count: <%= report.labourCount %>
+                        </small>
+
+                        <% if (report.reviewRemarks) { %>
+                            <p class="worker-report-muted">
+                                Review: <%= report.reviewRemarks %>
+                            </p>
+                        <% } %>
+
+                    </article>
+
+                <% }) %>
+
+            </div>
+
+        <% } %>
+    </section>
+
+</section>
+
+
+<script>
+(() => {
+    const input = document.getElementById("photos");
+    const preview = document.getElementById("photoPreview");
+
+    if (!input || !preview) return;
+
+    input.addEventListener("change", () => {
+        preview.replaceChildren();
+
+        const files = Array.from(input.files || []);
+
+        files.forEach(file => {
+            if (!file.type.startsWith("image/")) return;
+
+            const image = document.createElement("img");
+            image.alt = "Selected construction site photo";
+            image.src = URL.createObjectURL(file);
+            image.className = "worker-photo-preview-image";
+
+            preview.appendChild(image);
+        });
+    });
+})();
+</script>
+
+
+<%- include("../partials/dashboard-layout-end") %>

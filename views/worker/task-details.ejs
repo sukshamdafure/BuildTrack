@@ -1,0 +1,481 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<%
+    const progressValue = Math.max(
+        0,
+        Math.min(100, Number(task.progress) || 0)
+    );
+
+    const taskStatus = String(task.status || "NOT_STARTED");
+    const taskStatusClass = taskStatus.toLowerCase().replace(/_/g, "-");
+    const taskStatusLabel = taskStatus.replace(/_/g, " ");
+
+    const priorityValue = String(task.priority || "MEDIUM");
+    const priorityClass = priorityValue.toLowerCase();
+
+    const deadlineValue = String(deadlineStatus || "UNKNOWN");
+    const deadlineClass = deadlineValue.toLowerCase().replace(/_/g, "-");
+
+    const isCompleted =
+        task.status === "COMPLETED" || progressValue >= 100;
+%>
+
+<section class="wtd-page">
+
+    <!-- Page header -->
+    <header class="wtd-page-header">
+        <div class="wtd-heading-content">
+            <a href="/worker/tasks" class="wtd-back-link">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to My Tasks
+            </a>
+
+            <span class="wtd-eyebrow">WORKER PORTAL / TASK DETAILS</span>
+
+            <h1><%= task.name %></h1>
+
+            <p class="wtd-project-subtitle">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-7h8v7"/>
+                </svg>
+
+                <%= task.project
+                    ? task.project.name
+                    : "Project unavailable" %>
+            </p>
+        </div>
+
+        <span class="wtd-status-badge wtd-status-<%= taskStatusClass %>">
+            <span></span>
+            <%= taskStatusLabel %>
+        </span>
+    </header>
+
+    <!-- Primary actions -->
+    <section class="wtd-action-banner">
+        <div class="wtd-action-copy">
+            <div class="wtd-action-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"/>
+                    <path d="m9 15 8-8 4 4-8 8-5 1z"/>
+                </svg>
+            </div>
+
+            <div>
+                <h2><%= isCompleted ? "Task completed" : "Keep your work updated" %></h2>
+                <p>
+                    <%= isCompleted
+                        ? "Review the completed task details and submitted reports."
+                        : "Submit your progress for engineer review and record your daily site work." %>
+                </p>
+            </div>
+        </div>
+
+        <div class="wtd-action-buttons">
+            <% if (!isCompleted) { %>
+                <a
+                    href="/worker/tasks/<%= task._id %>/progress"
+                    class="wtd-primary-button"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"/>
+                        <path d="m9 15 8-8 4 4-8 8-5 1z"/>
+                    </svg>
+                    Submit progress
+                </a>
+            <% } %>
+
+            <a
+                href="/worker/tasks/<%= task._id %>/daily-report"
+                class="wtd-secondary-button"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <path d="M14 2v6h6M8 13h8M8 17h8"/>
+                </svg>
+                Daily work report
+            </a>
+        </div>
+    </section>
+
+    <!-- Task summary -->
+    <section class="wtd-summary-grid">
+
+        <article class="wtd-summary-card wtd-summary-progress">
+            <div class="wtd-summary-top">
+                <span>Current progress</span>
+                <span class="wtd-summary-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="m8 12 2.5 2.5L16 9"/>
+                    </svg>
+                </span>
+            </div>
+
+            <strong class="wtd-summary-number"><%= progressValue %>%</strong>
+
+            <div class="wtd-mini-track">
+                <div style="width: <%= progressValue %>%"></div>
+            </div>
+
+            <small>Engineer-approved task progress</small>
+        </article>
+
+        <article class="wtd-summary-card">
+            <div class="wtd-summary-top">
+                <span>Priority</span>
+                <span class="wtd-summary-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 21V4M5 4h13l-3 4 3 4H5"/>
+                    </svg>
+                </span>
+            </div>
+
+            <strong class="wtd-summary-text wtd-priority-<%= priorityClass %>">
+                <span class="wtd-priority-dot"></span>
+                <%= priorityValue %>
+            </strong>
+
+            <small>Assigned task priority</small>
+        </article>
+
+        <article class="wtd-summary-card">
+            <div class="wtd-summary-top">
+                <span>Start date</span>
+                <span class="wtd-summary-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="16" rx="2"/>
+                        <path d="M16 3v4M8 3v4M3 10h18"/>
+                    </svg>
+                </span>
+            </div>
+
+            <strong class="wtd-summary-text">
+                <%= task.startDate
+                    ? new Date(task.startDate).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    })
+                    : "Not specified" %>
+            </strong>
+
+            <small>Scheduled start</small>
+        </article>
+
+        <article class="wtd-summary-card">
+            <div class="wtd-summary-top">
+                <span>Deadline</span>
+                <span class="wtd-summary-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v5l3 2"/>
+                    </svg>
+                </span>
+            </div>
+
+            <strong class="wtd-summary-text">
+                <%= task.deadline
+                    ? new Date(task.deadline).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    })
+                    : "Not specified" %>
+            </strong>
+
+            <small>Target completion date</small>
+        </article>
+
+    </section>
+
+    <!-- Deadline alert -->
+    <% if (deadlineStatus === "OVERDUE") { %>
+        <div class="wtd-deadline-alert wtd-alert-overdue">
+            <span class="wtd-alert-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3 2.8 20h18.4L12 3z"/>
+                    <path d="M12 9v5M12 17h.01"/>
+                </svg>
+            </span>
+
+            <div>
+                <strong>This task is overdue</strong>
+                <p>
+                    <%= Math.abs(daysUntilDeadline || 0) %> day(s) past the deadline.
+                    Contact your engineer if you need assistance.
+                </p>
+            </div>
+        </div>
+    <% } else if (deadlineStatus === "APPROACHING") { %>
+        <div class="wtd-deadline-alert wtd-alert-approaching">
+            <span class="wtd-alert-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v5l3 2"/>
+                </svg>
+            </span>
+
+            <div>
+                <strong>Deadline approaching</strong>
+                <p>
+                    <%= daysUntilDeadline %> day(s) remaining. Plan your remaining work accordingly.
+                </p>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Details and instructions -->
+    <div class="wtd-content-grid">
+
+        <div class="wtd-main-column">
+
+            <section class="wtd-panel">
+                <div class="wtd-panel-heading">
+                    <div class="wtd-panel-heading-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            <path d="M8 7h8M8 11h8"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Work instructions</h2>
+                        <p>Guidance and notes for this activity.</p>
+                    </div>
+                </div>
+
+                <div class="wtd-instructions">
+                    <% if (task.description) { %>
+                        <p><%= task.description %></p>
+                    <% } else { %>
+                        <p class="wtd-muted-text">
+                            No additional instructions have been provided.
+                        </p>
+                    <% } %>
+                </div>
+
+                <% if (task.remarks) { %>
+                    <div class="wtd-remarks">
+                        <strong>Engineer remarks</strong>
+                        <p><%= task.remarks %></p>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- Current progress -->
+            <section class="wtd-panel">
+                <div class="wtd-panel-heading wtd-progress-panel-heading">
+                    <div class="wtd-panel-heading-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 3v18h18"/>
+                            <path d="m7 14 4-4 4 3 5-7"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Progress overview</h2>
+                        <p>Current recorded progress for this task.</p>
+                    </div>
+
+                    <strong class="wtd-large-percentage">
+                        <%= progressValue %>%
+                    </strong>
+                </div>
+
+                <div class="wtd-large-track">
+                    <div style="width: <%= progressValue %>%"></div>
+                </div>
+
+                <div class="wtd-progress-scale">
+                    <span>0% · Not started</span>
+                    <span>100% · Complete</span>
+                </div>
+
+                <p class="wtd-progress-explanation">
+                    Progress updates submitted by you are reviewed by your engineer.
+                    The value displayed here reflects the task's current recorded progress.
+                </p>
+            </section>
+
+            <!-- Dependencies -->
+            <section class="wtd-panel">
+                <div class="wtd-panel-heading">
+                    <div class="wtd-panel-heading-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                            <path d="M10 6.5h4a3 3 0 0 1 3 3V14"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Task dependencies</h2>
+                        <p>Other activities linked to this task.</p>
+                    </div>
+                </div>
+
+                <% if (task.dependencies && task.dependencies.length > 0) { %>
+
+                    <div class="wtd-list">
+
+                        <% task.dependencies.forEach(dependency => { %>
+                            <div class="wtd-list-item">
+                                <div class="wtd-list-item-main">
+                                    <span class="wtd-list-marker">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                                            <path d="m5 12 4 4L19 6"/>
+                                        </svg>
+                                    </span>
+
+                                    <div>
+                                        <strong><%= dependency.name %></strong>
+                                        <span>
+                                            Progress: <%= dependency.progress || 0 %>%
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <span class="wtd-small-status">
+                                    <%= String(dependency.status || "UNKNOWN").replace(/_/g, " ") %>
+                                </span>
+                            </div>
+                        <% }) %>
+
+                    </div>
+
+                <% } else { %>
+
+                    <div class="wtd-inline-empty">
+                        <p>No dependencies are linked to this task.</p>
+                    </div>
+
+                <% } %>
+            </section>
+
+        </div>
+
+        <!-- Assigned team -->
+        <aside class="wtd-side-column">
+            <section class="wtd-panel wtd-team-panel">
+                <div class="wtd-panel-heading">
+                    <div class="wtd-panel-heading-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Assigned team</h2>
+                        <p>Workers assigned to this activity.</p>
+                    </div>
+                </div>
+
+                <div class="wtd-team-count">
+                    <strong><%= task.assignedWorkers ? task.assignedWorkers.length : 0 %></strong>
+                    <span>
+                        <%= task.assignedWorkers && task.assignedWorkers.length === 1
+                            ? "team member"
+                            : "team members" %>
+                    </span>
+                </div>
+
+                <% if (task.assignedWorkers && task.assignedWorkers.length > 0) { %>
+
+                    <div class="wtd-team-list">
+
+                        <% task.assignedWorkers.forEach(member => { %>
+                            <div class="wtd-team-member">
+                                <div class="wtd-team-avatar">
+                                    <%= member.name
+                                        ? member.name.charAt(0).toUpperCase()
+                                        : "W" %>
+                                </div>
+
+                                <div class="wtd-team-member-info">
+                                    <strong><%= member.name || "Worker" %></strong>
+                                    <span><%= member.email || "Email unavailable" %></span>
+                                </div>
+                            </div>
+                        <% }) %>
+
+                    </div>
+
+                <% } else { %>
+
+                    <div class="wtd-inline-empty">
+                        <p>No team members are currently assigned.</p>
+                    </div>
+
+                <% } %>
+            </section>
+
+            <section class="wtd-panel wtd-schedule-panel">
+                <div class="wtd-panel-heading">
+                    <div class="wtd-panel-heading-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7v5l3 2"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2>Schedule</h2>
+                        <p>Planned task duration.</p>
+                    </div>
+                </div>
+
+                <div class="wtd-schedule-row">
+                    <span>Start date</span>
+                    <strong>
+                        <%= task.startDate
+                            ? new Date(task.startDate).toLocaleDateString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            })
+                            : "Not specified" %>
+                    </strong>
+                </div>
+
+                <div class="wtd-schedule-row">
+                    <span>Deadline</span>
+                    <strong>
+                        <%= task.deadline
+                            ? new Date(task.deadline).toLocaleDateString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            })
+                            : "Not specified" %>
+                    </strong>
+                </div>
+
+                <div class="wtd-schedule-row">
+                    <span>Estimated duration</span>
+                    <strong>
+                        <%= task.estimatedDuration != null
+                            ? task.estimatedDuration + " days"
+                            : "Not specified" %>
+                    </strong>
+                </div>
+
+                <div class="wtd-schedule-row">
+                    <span>Deadline status</span>
+                    <span class="wtd-deadline-badge wtd-deadline-<%= deadlineClass %>">
+                        <%= deadlineValue.replace(/_/g, " ") %>
+                    </span>
+                </div>
+            </section>
+        </aside>
+
+    </div>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

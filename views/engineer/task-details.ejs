@@ -1,0 +1,487 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+
+        <span class="page-eyebrow">
+            TASK DETAILS
+        </span>
+
+        <h1>
+            <%= task.name %>
+        </h1>
+
+        <p>
+            <%= task.project ? task.project.name : "Project" %>
+        </p>
+
+    </div>
+
+    <div class="page-header-actions">
+
+        <a
+            href="/engineer/projects/<%= task.project._id %>/tasks"
+            class="secondary-button"
+        >
+            Back to Tasks
+        </a>
+
+        <a
+            href="/engineer/tasks/<%= task._id %>/edit"
+            class="page-action-button"
+        >
+            Edit Task
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Task Hero -->
+
+<section class="task-detail-hero">
+
+    <div class="task-detail-title">
+
+        <div class="task-detail-icon">
+            T
+        </div>
+
+        <div>
+
+            <span class="task-detail-label">
+                Construction Activity
+            </span>
+
+            <h2>
+                <%= task.name %>
+            </h2>
+
+            <p>
+                <%= task.project ? task.project.name : "—" %>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="task-detail-badges">
+
+        <span class="status-badge status-<%= task.status.toLowerCase() %>">
+            <%= task.status.replace("_", " ") %>
+        </span>
+
+        <span class="priority-badge priority-<%= task.priority.toLowerCase() %>">
+            <%= task.priority %>
+        </span>
+
+    </div>
+
+</section>
+
+
+<!-- KPI Cards -->
+
+<div class="task-detail-kpi-grid">
+
+    <div class="task-detail-kpi">
+
+        <span>Progress</span>
+
+        <strong>
+            <%= task.progress %>%
+        </strong>
+
+    </div>
+
+
+    <div class="task-detail-kpi">
+
+        <span>Task Weight</span>
+
+        <strong>
+            <%= task.weight %>%
+        </strong>
+
+    </div>
+
+
+    <div class="task-detail-kpi">
+
+        <span>Workers</span>
+
+        <strong>
+            <%= task.assignedWorkers.length %>
+        </strong>
+
+    </div>
+
+
+    <div class="task-detail-kpi">
+
+        <span>Duration</span>
+
+        <strong>
+            <%= task.estimatedDuration || "—" %>
+            <% if (task.estimatedDuration) { %>
+                days
+            <% } %>
+        </strong>
+
+    </div>
+
+</div>
+
+
+<div class="task-detail-grid">
+
+    <!-- Main information -->
+
+    <div>
+
+        <section class="task-detail-panel">
+
+            <div class="task-detail-panel-header">
+
+                <div>
+                    <h2>Task Information</h2>
+                    <p>Details about this construction activity.</p>
+                </div>
+
+            </div>
+
+
+            <div class="task-description">
+
+                <span>Description</span>
+
+                <% if (task.description) { %>
+
+                    <p>
+                        <%= task.description %>
+                    </p>
+
+                <% } else { %>
+
+                    <p class="muted-text">
+                        No description provided.
+                    </p>
+
+                <% } %>
+
+            </div>
+
+
+            <div class="task-info-list">
+
+                <div class="task-info-item">
+
+                    <span>Start Date</span>
+
+                    <strong>
+                        <%= new Date(task.startDate).toLocaleDateString(
+                            "en-IN",
+                            {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        ) %>
+                    </strong>
+
+                </div>
+
+
+                <div class="task-info-item">
+
+                    <span>Deadline</span>
+
+                    <strong>
+                        <%= new Date(task.deadline).toLocaleDateString(
+                            "en-IN",
+                            {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        ) %>
+                    </strong>
+
+                </div>
+
+                <div class="task-deadline-status">
+
+    <span class="task-deadline-label">
+        Deadline Status
+    </span>
+
+    <div class="task-deadline-result">
+
+        <span class="deadline-badge deadline-<%= deadlineStatus.toLowerCase() %>">
+            <%= deadlineStatus.replace("_", " ") %>
+        </span>
+
+
+        <% if (deadlineStatus === "OVERDUE") { %>
+
+            <span class="deadline-message">
+                <%= Math.abs(daysUntilDeadline) %>
+                day<%= Math.abs(daysUntilDeadline) === 1 ? "" : "s" %>
+                overdue
+            </span>
+
+        <% } else if (deadlineStatus === "APPROACHING") { %>
+
+            <span class="deadline-message">
+                <%= daysUntilDeadline %>
+                day<%= daysUntilDeadline === 1 ? "" : "s" %>
+                remaining
+            </span>
+
+        <% } else if (deadlineStatus === "UPCOMING") { %>
+
+            <span class="deadline-message">
+                <%= daysUntilDeadline %>
+                days remaining
+            </span>
+
+        <% } else if (deadlineStatus === "COMPLETED") { %>
+
+            <span class="deadline-message">
+                Task completed
+            </span>
+
+        <% } %>
+
+    </div>
+
+</div>
+
+
+                <div class="task-info-item">
+
+                    <span>Actual Completion</span>
+
+                    <strong>
+
+                        <% if (task.actualCompletionDate) { %>
+
+                            <%= new Date(
+                                task.actualCompletionDate
+                            ).toLocaleDateString(
+                                "en-IN",
+                                {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric"
+                                }
+                            ) %>
+
+                        <% } else { %>
+
+                            Not completed
+
+                        <% } %>
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Progress -->
+
+        <section class="task-detail-panel">
+
+            <div class="task-detail-panel-header">
+
+                <div>
+                    <h2>Task Progress</h2>
+                    <p>Current completion status.</p>
+                </div>
+
+                <strong class="task-progress-percentage">
+                    <%= task.progress %>%
+                </strong>
+
+            </div>
+
+
+            <div class="large-progress-bar">
+
+                <div
+                    class="large-progress-fill"
+                    style="width: <%= task.progress %>%"
+                ></div>
+
+            </div>
+
+
+            <div class="progress-scale">
+
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+
+            </div>
+
+        </section>
+
+
+        <!-- Remarks -->
+
+        <section class="task-detail-panel">
+
+            <div class="task-detail-panel-header">
+
+                <div>
+                    <h2>Remarks</h2>
+                </div>
+
+            </div>
+
+
+            <% if (task.remarks) { %>
+
+                <p class="task-remarks">
+                    <%= task.remarks %>
+                </p>
+
+            <% } else { %>
+
+                <p class="muted-text">
+                    No remarks added.
+                </p>
+
+            <% } %>
+
+        </section>
+
+    </div>
+
+
+    <!-- Sidebar information -->
+
+    <div>
+
+        <!-- Workers -->
+
+        <section class="task-detail-panel">
+
+            <div class="task-detail-panel-header">
+
+                <div>
+                    <h2>Assigned Workers</h2>
+                    <p>Workers responsible for this task.</p>
+                </div>
+
+            </div>
+
+
+            <% if (task.assignedWorkers.length === 0) { %>
+
+                <p class="muted-text">
+                    No workers assigned.
+                </p>
+
+            <% } else { %>
+
+                <div class="assigned-worker-list">
+
+                    <% task.assignedWorkers.forEach(worker => { %>
+
+                        <div class="assigned-worker">
+
+                            <div class="worker-avatar">
+                                <%= worker.name.charAt(0).toUpperCase() %>
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    <%= worker.name %>
+                                </strong>
+
+                                <span>
+                                    <%= worker.email %>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    <% }) %>
+
+                </div>
+
+            <% } %>
+
+        </section>
+
+
+        <!-- Dependencies -->
+
+        <section class="task-detail-panel">
+
+            <div class="task-detail-panel-header">
+
+                <div>
+                    <h2>Dependencies</h2>
+                    <p>Tasks required before this activity.</p>
+                </div>
+
+            </div>
+
+
+            <% if (task.dependencies.length === 0) { %>
+
+                <p class="muted-text">
+                    No dependencies.
+                </p>
+
+            <% } else { %>
+
+                <div class="dependency-list">
+
+                    <% task.dependencies.forEach(dependency => { %>
+
+                        <div class="dependency-item">
+
+                            <strong>
+                                <%= dependency.name %>
+                            </strong>
+
+                            <div>
+
+                                <span class="status-badge status-<%= dependency.status.toLowerCase() %>">
+                                    <%= dependency.status.replace("_", " ") %>
+                                </span>
+
+                                <span class="dependency-progress">
+                                    <%= dependency.progress %>%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    <% }) %>
+
+                </div>
+
+            <% } %>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<%- include("../partials/dashboard-layout-end") %>

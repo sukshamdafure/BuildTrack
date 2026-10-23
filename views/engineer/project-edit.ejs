@@ -1,0 +1,334 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+        <h1>Edit Project</h1>
+
+        <p>
+            Update the details of
+            <strong><%= project.name %></strong>.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+
+        <a
+            href="/engineer/projects/<%= project._id %>"
+            class="secondary-button"
+        >
+            Cancel
+        </a>
+
+    </div>
+
+</div>
+
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Project Information</h2>
+
+            <p>
+                Update project information without changing its
+                current progress.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form
+        action="/engineer/projects/<%= project._id %>"
+        method="POST"
+        class="project-form"
+    >
+
+        <div class="form-grid">
+
+
+            <!-- Project Name -->
+
+            <div class="form-group">
+
+                <label for="name">
+                    Project Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="<%= project.name %>"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Client -->
+
+            <div class="form-group">
+
+                <label for="client">
+                    Client
+                </label>
+
+                <select
+                    id="client"
+                    name="client"
+                    required
+                >
+
+                    <% clients.forEach(client => { %>
+
+                        <option
+                            value="<%= client._id %>"
+                            <%= project.client &&
+                                project.client.toString() === client._id.toString()
+                                ? "selected"
+                                : "" %>
+                        >
+                            <%= client.name %> - <%= client.email %>
+                        </option>
+
+                    <% }) %>
+
+                </select>
+
+            </div>
+
+
+            <!-- Site Location -->
+
+            <div class="form-group form-group-full">
+
+                <label for="siteLocation">
+                    Site Location
+                </label>
+
+                <input
+                    type="text"
+                    id="siteLocation"
+                    name="siteLocation"
+                    value="<%= project.siteLocation %>"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Project Type -->
+
+            <div class="form-group">
+
+                <label for="projectType">
+                    Project Type
+                </label>
+
+                <input
+                    type="text"
+                    id="projectType"
+                    name="projectType"
+                    value="<%= project.projectType || "" %>"
+                    placeholder="Residential / Commercial / Road"
+                >
+
+            </div>
+
+
+            <!-- Budget -->
+
+            <div class="form-group">
+
+                <label for="budget">
+                    Budget
+                </label>
+
+                <input
+                    type="number"
+                    id="budget"
+                    name="budget"
+                    min="0"
+                    step="0.01"
+                    value="<%= project.budget %>"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Start Date -->
+
+            <div class="form-group">
+
+                <label for="startDate">
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value="<%= new Date(project.startDate).toISOString().split("T")[0] %>"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Expected Completion -->
+
+            <div class="form-group">
+
+                <label for="expectedCompletionDate">
+                    Expected Completion Date
+                </label>
+
+                <input
+                    type="date"
+                    id="expectedCompletionDate"
+                    name="expectedCompletionDate"
+                    value="<%= new Date(project.expectedCompletionDate).toISOString().split("T")[0] %>"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                >
+
+                    <option
+                        value="PLANNING"
+                        <%= project.status === "PLANNING" ? "selected" : "" %>
+                    >
+                        Planning
+                    </option>
+
+                    <option
+                        value="ACTIVE"
+                        <%= project.status === "ACTIVE" ? "selected" : "" %>
+                    >
+                        Active
+                    </option>
+
+                    <option
+                        value="ON_HOLD"
+                        <%= project.status === "ON_HOLD" ? "selected" : "" %>
+                    >
+                        On Hold
+                    </option>
+
+                    <option
+                        value="COMPLETED"
+                        <%= project.status === "COMPLETED" ? "selected" : "" %>
+                    >
+                        Completed
+                    </option>
+
+                    <option
+                        value="CANCELLED"
+                        <%= project.status === "CANCELLED" ? "selected" : "" %>
+                    >
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Description -->
+
+            <div class="form-group form-group-full">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="6"
+                    placeholder="Describe the construction project..."
+                ><%= project.description || "" %></textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- Current Progress Notice -->
+
+        <div class="edit-project-notice">
+
+            <div class="edit-project-notice-title">
+                Current Project Progress
+            </div>
+
+            <div class="edit-project-progress">
+
+                <strong>
+                    <%= project.progress %>%
+                </strong>
+
+                <div class="progress-bar">
+
+                    <div
+                        class="progress-fill"
+                        style="width: <%= project.progress %>%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+            <p>
+                Project progress is managed through construction
+                activities and task updates. Editing project
+                information will not change the current progress.
+            </p>
+
+        </div>
+
+
+        <!-- Actions -->
+
+        <div class="form-actions">
+
+            <a
+                href="/engineer/projects/<%= project._id %>"
+                class="secondary-button"
+            >
+                Cancel
+            </a>
+
+            <button
+                type="submit"
+                class="page-action-button"
+            >
+                Save Changes
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<%- include("../partials/dashboard-layout-end") %>

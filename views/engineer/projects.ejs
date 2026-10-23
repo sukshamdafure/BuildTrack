@@ -1,0 +1,148 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+        <span class="page-eyebrow">Project portfolio</span>
+        <h1>Projects</h1>
+        <p>Manage your construction projects.</p>
+    </div>
+
+    <a href="/engineer/projects/new" class="page-action-button">
+        + New Project
+    </a>
+
+</div>
+
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>All Projects</h2>
+
+            <p>
+                Projects assigned to you as engineer.
+            </p>
+        </div>
+
+    </div>
+
+
+    <% if (projects.length === 0) { %>
+
+        <div class="empty-dashboard-state">
+
+            <h3>No projects yet</h3>
+
+            <p>
+                Create your first construction project to get started.
+            </p>
+
+            <a
+                href="/engineer/projects/new"
+                class="page-action-button"
+            >
+                Create Project
+            </a>
+
+        </div>
+
+    <% } else { %>
+
+
+        <div class="project-grid">
+
+            <% projects.forEach(project => { %>
+
+                <a
+                    href="/engineer/projects/<%= project._id %>"
+                    class="project-card"
+                >
+
+                    <div class="project-card-header">
+
+                        <div>
+                            <h3>
+                                <%= project.name %>
+                            </h3>
+
+                            <p>
+                                <%= project.projectType || "Construction Project" %>
+                            </p>
+                        </div>
+
+                        <span class="status-badge status-active">
+                            <%= project.status %>
+                        </span>
+
+                    </div>
+
+
+                    <div class="project-card-location">
+
+                        <strong>Site</strong>
+
+                        <span>
+                            <%= project.siteLocation %>
+                        </span>
+
+                    </div>
+
+
+                    <div class="project-card-progress">
+
+                        <div class="progress-header">
+
+                            <span>Progress</span>
+
+                            <strong>
+                                <%= project.progress %>%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+
+                            <div
+                                class="progress-fill"
+                                style="width: <%= project.progress %>%;"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-card-footer">
+
+                        <span>
+                            Client:
+                            <strong>
+                                <%= project.client ? project.client.name : "N/A" %>
+                            </strong>
+                        </span>
+
+                        <span>
+                            Budget:
+                            <strong>
+                                ₹<%= Number(project.budget).toLocaleString("en-IN") %>
+                            </strong>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            <% }) %>
+
+        </div>
+
+
+    <% } %>
+
+</section>
+
+
+<%- include("../partials/dashboard-layout-end") %>

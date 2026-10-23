@@ -1,0 +1,52 @@
+<nav class="top-navbar">
+    <div class="navbar-left">
+        <a href="/" class="brand">
+            <span class="brand-mark">B</span>
+            <span>BuildTrack</span>
+        </a>
+    </div>
+
+    <div class="navbar-right">
+        <% if (currentUser) { %>
+            <div class="user-info">
+                <span class="user-name"><%= currentUser.name %></span>
+                <span class="user-role"><%= currentUser.role %></span>
+            </div>
+
+            <a
+                href="/notifications"
+                class="navbar-notifications-link<%= (typeof currentPath === 'string' && currentPath.indexOf('/notifications') === 0) ? ' is-active' : '' %>"
+                aria-label="Notifications"
+                title="Notifications"
+            >
+                <svg
+                    class="navbar-notification-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                </svg>
+
+                <% if (unreadNotificationCount > 0) { %>
+                    <span class="navbar-notification-badge">
+                        <%= unreadNotificationCount > 99 ? "99+" : unreadNotificationCount %>
+                    </span>
+                <% } %>
+            </a>
+
+            <a href="/logout" class="logout-link">Logout</a>
+        <% } else { %>
+            <a href="/login" class="navbar-link">Login</a>
+            <a href="/register" class="navbar-button">Register</a>
+        <% } %>
+    </div>
+</nav>

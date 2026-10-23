@@ -1,0 +1,492 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="engineer-analytics">
+
+    <!-- Dashboard Header -->
+    <header class="analytics-heading">
+        <div>
+            <span class="analytics-eyebrow">PROJECT INTELLIGENCE</span>
+            <h1>Engineer Overview</h1>
+            <p>Monitor project delivery, task performance and reviews.</p>
+        </div>
+
+        <a href="/engineer/projects" class="analytics-action">
+            View All Projects <span>↗</span>
+        </a>
+    </header>
+
+    <!-- KPI Summary Cards -->
+    <section class="analytics-kpis">
+
+        <article class="analytics-kpi">
+            <div class="kpi-top">
+                <span>Total Projects</span>
+                <span class="kpi-icon">P</span>
+            </div>
+            <strong><%= dashboardStats.totalProjects %></strong>
+            <small>Assigned projects</small>
+        </article>
+
+        <article class="analytics-kpi kpi-teal">
+            <div class="kpi-top">
+                <span>Active Projects</span>
+                <span class="kpi-icon">↗</span>
+            </div>
+            <strong><%= dashboardStats.activeProjects %></strong>
+            <small>Projects in progress</small>
+        </article>
+
+        <article class="analytics-kpi kpi-green">
+            <div class="kpi-top">
+                <span>Completed Projects</span>
+                <span class="kpi-icon">✓</span>
+            </div>
+            <strong><%= dashboardStats.completedProjects %></strong>
+            <small>Projects completed</small>
+        </article>
+
+        <article class="analytics-kpi kpi-purple">
+            <div class="kpi-top">
+                <span>Average Progress</span>
+                <span class="kpi-icon">%</span>
+            </div>
+            <strong><%= dashboardStats.averageProgress %>%</strong>
+            <div class="kpi-track">
+                <div style="width: <%= dashboardStats.averageProgress %>%"></div>
+            </div>
+        </article>
+
+        <article class="analytics-kpi kpi-orange">
+            <div class="kpi-top">
+                <span>Overdue Tasks</span>
+                <span class="kpi-icon">!</span>
+            </div>
+            <strong><%= dashboardStats.overdueTasks %></strong>
+            <small>Require attention</small>
+        </article>
+
+        <article class="analytics-kpi kpi-red">
+            <div class="kpi-top">
+                <span>Pending Reviews</span>
+                <span class="kpi-icon">◷</span>
+            </div>
+            <strong><%= dashboardStats.pendingReviews %></strong>
+            <small>Reports and updates</small>
+        </article>
+
+    </section>
+
+    <!-- Analytics Charts -->
+    <section class="analytics-chart-grid">
+
+        <!-- Project Progress Chart -->
+        <article class="analytics-panel">
+
+            <div class="analytics-panel-heading">
+                <div>
+                    <h2>Project Progress</h2>
+                    <p>Progress comparison across projects</p>
+                </div>
+
+                <span class="panel-tag">BY PROJECT</span>
+            </div>
+
+            <% if (projectChartLabels.length === 0) { %>
+
+                <div class="analytics-empty">
+                    No project data available yet.
+                </div>
+
+            <% } else { %>
+
+                <div class="analytics-bar-chart">
+                    <canvas
+                        id="projectProgressChart"
+                        role="img"
+                        aria-label="Horizontal bar chart comparing project progress percentages"
+                    ></canvas>
+                </div>
+
+            <% } %>
+
+        </article>
+
+        <!-- Task Distribution Chart -->
+        <article class="analytics-panel">
+
+            <div class="analytics-panel-heading">
+                <div>
+                    <h2>Task Distribution</h2>
+                    <p>Breakdown by task status</p>
+                </div>
+
+                <span class="panel-tag">TASKS</span>
+            </div>
+
+            <% const totalChartTasks = taskChartValues.reduce(
+                (sum, value) => sum + value, 0
+            ); %>
+
+            <% if (totalChartTasks === 0) { %>
+
+                <div class="analytics-empty">
+                    No tasks available for analysis.
+                </div>
+
+            <% } else { %>
+
+                <div class="analytics-donut-chart">
+                    <canvas
+                        id="taskStatusChart"
+                        role="img"
+                        aria-label="Doughnut chart showing the task status distribution"
+                    ></canvas>
+                </div>
+
+            <% } %>
+
+        </article>
+
+    </section>
+
+    <!-- Project Progress Details -->
+    <section class="analytics-panel">
+
+        <div class="analytics-panel-heading">
+            <div>
+                <h2>Project Portfolio</h2>
+                <p>Progress and status of assigned projects</p>
+            </div>
+
+            <a href="/engineer/projects" class="analytics-text-link">
+                All Projects →
+            </a>
+        </div>
+
+        <% if (projects.length === 0) { %>
+
+            <div class="analytics-empty">
+                No projects have been assigned to you yet.
+            </div>
+
+        <% } else { %>
+
+            <div class="analytics-project-list">
+
+                <% projects.slice(0, 6).forEach(project => { %>
+
+                    <div class="analytics-project-row">
+
+                        <div class="analytics-project-info">
+                            <strong><%= project.name %></strong>
+                            <span><%= project.location %></span>
+                        </div>
+
+                        <div
+                            class="analytics-project-progress"
+                            aria-label="Project progress: <%= project.progress %>%"
+                        >
+                            <div class="analytics-project-progress-track">
+                                <div
+                                    class="analytics-project-progress-fill"
+                                    style="width: <%= project.progress %>%"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <strong class="analytics-project-percentage">
+                            <%= project.progress %>%
+                        </strong>
+
+                        <span class="analytics-project-status">
+                            <%= project.statusLabel %>
+                        </span>
+
+                    </div>
+
+                <% }) %>
+
+            </div>
+
+        <% } %>
+
+    </section>
+
+    <!-- Upcoming Deadlines -->
+    <section class="analytics-panel analytics-deadlines">
+
+        <div class="analytics-panel-heading">
+            <div>
+                <h2>Upcoming Deadlines</h2>
+                <p>Overdue tasks and tasks due within 30 days</p>
+            </div>
+
+            <a href="/engineer/tasks" class="analytics-text-link">
+                View Tasks →
+            </a>
+        </div>
+
+        <div class="analytics-table-wrap">
+
+            <table class="analytics-table">
+
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Project</th>
+                        <th>Due Date</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <% if (upcomingDeadlines.length === 0) { %>
+
+                        <tr>
+                            <td colspan="4" class="analytics-table-empty">
+                                No upcoming deadlines.
+                            </td>
+                        </tr>
+
+                    <% } else { %>
+
+                        <% upcomingDeadlines.forEach(task => { %>
+
+                            <tr>
+                                <td class="analytics-task-name">
+                                    <%= task.title %>
+
+                                    <% if (task.isOverdue) { %>
+                                        <span class="analytics-overdue-dot"></span>
+                                        <span class="analytics-overdue-label">
+                                            Overdue
+                                        </span>
+                                    <% } %>
+                                </td>
+
+                                <td><%= task.projectName %></td>
+
+                                <td><%= task.deadlineLabel %></td>
+
+                                <td>
+                                    <span class="analytics-priority <%= task.priorityClass %>">
+                                        <%= task.priority %>
+                                    </span>
+                                </td>
+                            </tr>
+
+                        <% }) %>
+
+                    <% } %>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- Compact Recent Activity -->
+    <section class="analytics-panel analytics-activity">
+
+        <div class="analytics-panel-heading">
+            <div>
+                <h2>Recent Activity</h2>
+                <p>Latest updates across your projects</p>
+            </div>
+        </div>
+
+        <% if (recentActivities.length === 0) { %>
+
+            <div class="analytics-empty">
+                No recent activity.
+            </div>
+
+        <% } else { %>
+
+            <div class="analytics-activity-list">
+
+                <% recentActivities.forEach(activity => { %>
+
+                    <div class="analytics-activity-row">
+
+                        <span class="activity-type-mark <%= activity.type === "REPORT" ? "report-mark" : "progress-mark" %>">
+                            <%= activity.type === "REPORT" ? "R" : "P" %>
+                        </span>
+
+                        <div class="activity-main">
+                            <strong><%= activity.title %></strong>
+                            <span><%= activity.projectName %></span>
+                        </div>
+
+                        <time>
+                            <%= activity.dateLabel %>
+                        </time>
+
+                    </div>
+
+                <% }) %>
+
+            </div>
+
+        <% } %>
+
+    </section>
+
+</div>
+
+<!-- Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+<script>
+(() => {
+    const projectLabels = <%- JSON.stringify(projectChartLabels).replace(/</g, "\\u003c") %>;
+    const projectValues = <%- JSON.stringify(projectChartValues) %>;
+
+    const taskLabels = <%- JSON.stringify(taskChartLabels).replace(/</g, "\\u003c") %>;
+    const taskValues = <%- JSON.stringify(taskChartValues) %>;
+
+    // Original Construction Management palette only.
+    const palette = {
+        coral: "#D65F47",
+        dark: "#232323",
+        secondary: "#2A2A2A",
+        gray: "#B6B6B6",
+        offWhite: "#FBF9F6"
+    };
+
+    if (typeof Chart === "undefined") {
+        console.error("Chart.js could not be loaded.");
+        return;
+    }
+
+    Chart.defaults.color = palette.secondary;
+    Chart.defaults.font.family = "IBM Plex Sans, Segoe UI, system-ui, sans-serif";
+
+    // Project progress chart.
+    const progressCanvas = document.getElementById(
+        "projectProgressChart"
+    );
+
+    if (progressCanvas) {
+        new Chart(progressCanvas, {
+            type: "bar",
+
+            data: {
+                labels: projectLabels,
+
+                datasets: [{
+                    label: "Project Progress",
+                    data: projectValues,
+                    backgroundColor: palette.coral,
+                    hoverBackgroundColor: palette.secondary,
+                    borderRadius: 5,
+                    borderSkipped: false,
+                    barThickness: 21
+                }]
+            },
+
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: context =>
+                                ` ${context.raw}% complete`
+                        }
+                    }
+                },
+
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 100,
+
+                        grid: {
+                            color: palette.gray
+                        },
+
+                        ticks: {
+                            stepSize: 20,
+
+                            callback: value => `${value}%`
+                        }
+                    },
+
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Task distribution doughnut chart.
+    const taskCanvas = document.getElementById(
+        "taskStatusChart"
+    );
+
+    if (taskCanvas) {
+        new Chart(taskCanvas, {
+            type: "doughnut",
+
+            data: {
+                labels: taskLabels,
+
+                datasets: [{
+                    data: taskValues,
+
+                    backgroundColor: [
+                        palette.gray,
+                        palette.coral,
+                        palette.secondary
+                    ],
+
+                    hoverBackgroundColor: [
+                        palette.secondary,
+                        palette.dark,
+                        palette.coral
+                    ],
+
+                    borderColor: palette.offWhite,
+                    borderWidth: 3,
+                    hoverOffset: 5
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "68%",
+
+                plugins: {
+                    legend: {
+                        position: "bottom",
+
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: "circle",
+                            padding: 18,
+                            boxWidth: 8
+                        }
+                    }
+                }
+            }
+        });
+    }
+})();
+</script>
+
+<%- include("../partials/dashboard-layout-end") %>

@@ -1,0 +1,417 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+        <span class="page-eyebrow">TASK MANAGEMENT</span>
+
+        <h1>Create New Task</h1>
+
+        <p>
+            Add a construction activity to
+            <strong><%= project.name %></strong>
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+
+        <a
+            href="/engineer/projects/<%= project._id %>/tasks"
+            class="secondary-button"
+        >
+            Back to Tasks
+        </a>
+
+    </div>
+
+</div>
+
+
+<form
+    action="/engineer/projects/<%= project._id %>/tasks"
+    method="POST"
+    class="task-form"
+>
+
+    <!-- Basic Information -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+            <h2>Basic Information</h2>
+            <p>Define the construction activity.</p>
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group form-group-full">
+
+                <label for="name">
+                    Task Name *
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="e.g. Foundation Excavation"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group form-group-full">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="4"
+                    placeholder="Describe the work to be performed..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Workers -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+            <h2>Worker Assignment</h2>
+            <p>Select workers responsible for this task.</p>
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="assignedWorkers">
+                Assign Workers
+            </label>
+
+            <select
+                id="assignedWorkers"
+                name="assignedWorkers"
+                multiple
+                size="5"
+            >
+
+                <% if (workers.length === 0) { %>
+
+                    <option disabled>
+                        No active workers available
+                    </option>
+
+                <% } else { %>
+
+                    <% workers.forEach(worker => { %>
+
+                        <option value="<%= worker._id %>">
+                            <%= worker.name %> — <%= worker.email %>
+                        </option>
+
+                    <% }) %>
+
+                <% } %>
+
+            </select>
+
+            <small class="form-help">
+                Hold Command/Ctrl to select multiple workers.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <!-- Schedule -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+            <h2>Schedule</h2>
+            <p>Set the planned execution period.</p>
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="startDate">
+                    Start Date *
+                </label>
+
+                <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="deadline">
+                    Deadline *
+                </label>
+
+                <input
+                    type="date"
+                    id="deadline"
+                    name="deadline"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="estimatedDuration">
+                    Estimated Duration
+                </label>
+
+                <input
+                    type="number"
+                    id="estimatedDuration"
+                    name="estimatedDuration"
+                    min="0"
+                    placeholder="Days"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Planning -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+            <h2>Task Planning</h2>
+            <p>Define priority, progress and project weight.</p>
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="priority">
+                    Priority *
+                </label>
+
+                <select
+                    id="priority"
+                    name="priority"
+                    required
+                >
+
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM" selected>Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="CRITICAL">Critical</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status *
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                    required
+                >
+
+                    <option value="NOT_STARTED" selected>
+                        Not Started
+                    </option>
+
+                    <option value="IN_PROGRESS">
+                        In Progress
+                    </option>
+
+                    <option value="ON_HOLD">
+                        On Hold
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="progress">
+                    Initial Progress (%)
+                </label>
+
+                <input
+                    type="number"
+                    id="progress"
+                    name="progress"
+                    min="0"
+                    max="100"
+                    value="0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="weight">
+                    Task Weight (%) *
+                </label>
+
+                <input
+                    type="number"
+                    id="weight"
+                    name="weight"
+                    min="0.01"
+                    max="100"
+                    step="0.01"
+                    placeholder="e.g. 20"
+                    required
+                >
+
+                <small class="form-help">
+                    Used later to calculate weighted project progress.
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Dependencies -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+            <h2>Dependencies</h2>
+            <p>Select tasks that must be completed before this task.</p>
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="dependencies">
+                Depends On
+            </label>
+
+            <select
+                id="dependencies"
+                name="dependencies"
+                multiple
+                size="5"
+            >
+
+                <% if (dependencies.length === 0) { %>
+
+                    <option disabled>
+                        No previous tasks available
+                    </option>
+
+                <% } else { %>
+
+                    <% dependencies.forEach(dependency => { %>
+
+                        <option value="<%= dependency._id %>">
+
+                            <%= dependency.name %>
+                            —
+                            <%= dependency.status.replace("_", " ") %>
+
+                        </option>
+
+                    <% }) %>
+
+                <% } %>
+
+            </select>
+
+            <small class="form-help">
+                Optional. A task can depend on multiple previous tasks.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <!-- Remarks -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+            <h2>Additional Information</h2>
+        </div>
+
+
+        <div class="form-group form-group-full">
+
+            <label for="remarks">
+                Remarks
+            </label>
+
+            <textarea
+                id="remarks"
+                name="remarks"
+                rows="4"
+                placeholder="Add any additional instructions or remarks..."
+            ></textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- Actions -->
+
+    <div class="form-actions">
+
+        <a
+            href="/engineer/projects/<%= project._id %>/tasks"
+            class="secondary-button"
+        >
+            Cancel
+        </a>
+
+        <button
+            type="submit"
+            class="page-action-button"
+        >
+            Create Task
+        </button>
+
+    </div>
+
+</form>
+
+
+<%- include("../partials/dashboard-layout-end") %>

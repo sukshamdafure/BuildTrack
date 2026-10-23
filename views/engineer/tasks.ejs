@@ -1,0 +1,273 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+        <span class="page-eyebrow">
+            <%= project ? "PROJECT TASKS" : "TASK MANAGEMENT" %>
+        </span>
+
+        <h1>
+            <%= project ? project.name : "All Tasks" %>
+        </h1>
+
+        <p>
+            <%= project
+                ? "Manage activities and track progress for this project."
+                : "View and manage tasks across your projects."
+            %>
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+
+        <% if (project) { %>
+
+            <a
+                href="/engineer/projects/<%= project._id %>"
+                class="secondary-button"
+            >
+                Back to Project
+            </a>
+
+            <a
+                href="/engineer/projects/<%= project._id %>/tasks/new"
+                class="page-action-button"
+            >
+                + New Task
+            </a>
+
+        <% } %>
+
+    </div>
+
+</div>
+
+
+<div class="task-summary-grid">
+
+    <div class="task-summary-card">
+        <span>Total Tasks</span>
+        <strong><%= tasks.length %></strong>
+    </div>
+
+    <div class="task-summary-card">
+        <span>Not Started</span>
+        <strong>
+            <%= tasks.filter(task => task.status === "NOT_STARTED").length %>
+        </strong>
+    </div>
+
+    <div class="task-summary-card">
+        <span>In Progress</span>
+        <strong>
+            <%= tasks.filter(task => task.status === "IN_PROGRESS").length %>
+        </strong>
+    </div>
+
+    <div class="task-summary-card">
+        <span>Completed</span>
+        <strong>
+            <%= tasks.filter(task => task.status === "COMPLETED").length %>
+        </strong>
+    </div>
+
+</div>
+
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Tasks</h2>
+
+            <p>
+                <%= project
+                    ? "Activities assigned to this construction project."
+                    : "Activities across all your construction projects."
+                %>
+            </p>
+        </div>
+
+    </div>
+
+
+    <% if (tasks.length === 0) { %>
+
+        <div class="empty-dashboard-state">
+
+            <h3>No tasks yet</h3>
+
+            <p>
+                Start by creating the first task for this project.
+            </p>
+
+            <% if (project) { %>
+
+                <a
+                    href="/engineer/projects/<%= project._id %>/tasks/new"
+                    class="page-action-button"
+                >
+                    Create First Task
+                </a>
+
+            <% } %>
+
+        </div>
+
+    <% } else { %>
+
+        <div class="task-table-wrapper">
+
+            <table class="task-table">
+
+                <thead>
+                    <tr>
+
+                        <th>Task</th>
+
+                        <% if (!project) { %>
+                            <th>Project</th>
+                        <% } %>
+
+                        <th>Workers</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Deadline</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <% tasks.forEach(task => { %>
+
+                        <tr>
+
+                            <td>
+
+                                <div class="task-name-cell">
+
+                                    <a
+                                        href="/engineer/tasks/<%= task._id %>"
+                                        class="task-name-link"
+                                    >
+                                        <%= task.name %>
+                                    </a>
+
+                                    <% if (task.description) { %>
+
+                                        <span>
+                                            <%= task.description.length > 70
+                                                ? task.description.substring(0, 70) + "..."
+                                                : task.description
+                                            %>
+                                        </span>
+
+                                    <% } %>
+
+                                </div>
+
+                            </td>
+
+
+                            <% if (!project) { %>
+
+                                <td>
+                                    <%= task.project ? task.project.name : "—" %>
+                                </td>
+
+                            <% } %>
+
+
+                            <td>
+
+                                <% if (task.assignedWorkers.length === 0) { %>
+
+                                    <span class="muted-text">
+                                        Unassigned
+                                    </span>
+
+                                <% } else { %>
+
+                                    <div class="worker-count">
+                                        <%= task.assignedWorkers.length %>
+                                        worker<%= task.assignedWorkers.length > 1 ? "s" : "" %>
+                                    </div>
+
+                                <% } %>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="priority-badge priority-<%= task.priority.toLowerCase() %>">
+                                    <%= task.priority.replace("_", " ") %>
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="status-badge status-<%= task.status.toLowerCase() %>">
+                                    <%= task.status.replace("_", " ") %>
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="task-progress-cell">
+
+                                    <div class="task-progress-bar">
+
+                                        <div
+                                            class="task-progress-fill"
+                                            style="width: <%= task.progress %>%"
+                                        ></div>
+
+                                    </div>
+
+                                    <span>
+                                        <%= task.progress %>%
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <%= new Date(task.deadline).toLocaleDateString(
+                                    "en-IN",
+                                    {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric"
+                                    }
+                                ) %>
+
+                            </td>
+
+                        </tr>
+
+                    <% }) %>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    <% } %>
+
+</section>
+
+
+<%- include("../partials/dashboard-layout-end") %>

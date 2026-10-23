@@ -1,0 +1,138 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="client-reports-page">
+
+  <header class="client-reports-page-header">
+    <div>
+      <span class="client-eyebrow">SITE DOCUMENTATION</span>
+      <h1>Daily Work Reports</h1>
+      <p>
+        Browse site updates across your projects and open a report
+        when you need the complete details.
+      </p>
+    </div>
+  </header>
+
+  <!-- Summary -->
+  <div class="client-reports-summary">
+
+    <article class="client-reports-summary-card">
+      <span>Total reports</span>
+      <strong><%= summary.totalReports %></strong>
+    </article>
+
+    <article class="client-reports-summary-card">
+      <span>Pending review</span>
+      <strong><%= summary.pendingReports %></strong>
+    </article>
+
+    <article class="client-reports-summary-card">
+      <span>Reviewed</span>
+      <strong><%= summary.reviewedReports %></strong>
+    </article>
+
+    <article class="client-reports-summary-card">
+      <span>Reports with photos</span>
+      <strong><%= summary.reportsWithPhotos %></strong>
+    </article>
+
+  </div>
+
+  <!-- Compact report list -->
+  <section class="client-reports-list-section">
+
+    <div class="client-reports-list-heading">
+      <div>
+        <h2>Report history</h2>
+        <p>Latest reports first, across your projects.</p>
+      </div>
+
+      <span class="client-reports-count">
+        <%= reports.length %> listed
+      </span>
+    </div>
+
+    <% if (reports.length === 0) { %>
+
+      <div class="client-home-empty">
+        <h3>No reports available</h3>
+        <p>
+          Daily work reports will appear here when Workers submit
+          reports for your projects.
+        </p>
+      </div>
+
+    <% } else { %>
+
+      <div class="client-reports-table-wrap">
+        <table class="client-reports-table">
+
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Project / Task</th>
+              <th>Submitted by</th>
+              <th>Status</th>
+              <th>Photos</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% reports.forEach(report => { %>
+              <tr>
+
+                <td data-label="Date">
+                  <span class="client-report-date">
+                    <%= report.reportDateLabel %>
+                  </span>
+                </td>
+
+                <td data-label="Project / Task">
+                  <div class="client-report-list-project">
+                    <strong><%= report.projectName %></strong>
+                    <span><%= report.taskName %></span>
+                  </div>
+                </td>
+
+                <td data-label="Submitted by">
+                  <span class="client-report-list-worker">
+                    <%= report.workerName %>
+                  </span>
+                </td>
+
+                <td data-label="Status">
+                  <span class="client-project-status">
+                    <%= report.status %>
+                  </span>
+                </td>
+
+                <td data-label="Photos">
+                  <span class="client-report-photo-count">
+                    <%= report.photoCount %>
+                  </span>
+                </td>
+
+                <td data-label="Action">
+                  <a
+                    class="client-report-open-link"
+                    href="/client/reports/<%= report._id %>"
+                  >
+                    View report <span aria-hidden="true">→</span>
+                  </a>
+                </td>
+
+              </tr>
+            <% }) %>
+          </tbody>
+
+        </table>
+      </div>
+
+    <% } %>
+
+  </section>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

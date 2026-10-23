@@ -1,0 +1,292 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<%
+  const completionRate = summary.totalTasks > 0
+    ? Math.round(
+        (summary.completedTasks / summary.totalTasks) * 100
+      )
+    : 0;
+
+  const recordedProgressRate = summary.totalTasks > 0
+    ? Math.round(
+        (summary.tasksWithProgress / summary.totalTasks) * 100
+      )
+    : 0;
+%>
+
+<section class="client-progress-workspace">
+
+  <!-- Page header -->
+  <header class="client-progress-page-header">
+    <div>
+      <span class="client-eyebrow">PERFORMANCE OVERVIEW</span>
+      <h1>Project Progress</h1>
+      <p>
+        Understand project completion, identify delayed tasks, and review
+        recorded progress across your projects.
+      </p>
+    </div>
+
+    <a href="/client/projects" class="client-progress-header-link">
+      My Projects <span aria-hidden="true">→</span>
+    </a>
+  </header>
+
+  <!-- Metrics -->
+  <section class="client-progress-metrics">
+
+    <article class="client-progress-metric">
+      <span class="client-progress-metric-label">Projects tracked</span>
+      <strong><%= summary.totalProjects %></strong>
+      <small>Your project portfolio</small>
+    </article>
+
+    <article class="client-progress-metric">
+      <span class="client-progress-metric-label">Task completion</span>
+      <strong><%= completionRate %>%</strong>
+
+      <div class="client-progress-meter">
+        <div
+          class="client-mini-progress-fill"
+          style="width: <%= completionRate %>%"
+        ></div>
+      </div>
+
+      <small>
+        <%= summary.completedTasks %> of <%= summary.totalTasks %> tasks completed
+      </small>
+    </article>
+
+    <article class="client-progress-metric">
+      <span class="client-progress-metric-label">Delayed tasks</span>
+      <strong><%= summary.delayedTasks %></strong>
+      <small>Tasks marked delayed</small>
+    </article>
+
+    <article class="client-progress-metric">
+      <span class="client-progress-metric-label">Progress recorded</span>
+      <strong><%= recordedProgressRate %>%</strong>
+
+      <div class="client-progress-meter">
+        <div
+          class="client-mini-progress-fill"
+          style="width: <%= recordedProgressRate %>%"
+        ></div>
+      </div>
+
+      <small>
+        <%= summary.tasksWithProgress %> of <%= summary.totalTasks %> tasks
+        have a recorded progress value
+      </small>
+    </article>
+
+  </section>
+
+  <!-- One visual card per project -->
+  <section class="client-progress-section">
+
+    <div class="client-progress-section-heading">
+      <div>
+        <span class="client-eyebrow">PROJECT OVERVIEW</span>
+        <h2>Progress by project</h2>
+        <p>Each percentage comes from the saved project progress value.</p>
+      </div>
+    </div>
+
+    <% if (projectSummaries.length === 0) { %>
+
+      <div class="client-progress-empty">
+        <h3>No projects to track</h3>
+        <p>Projects associated with your account will appear here.</p>
+      </div>
+
+    <% } else { %>
+
+      <div class="client-progress-project-grid">
+
+        <% projectSummaries.forEach(project => { %>
+
+          <article class="client-progress-project-card">
+
+            <div class="client-progress-project-top">
+              <div class="client-progress-project-copy">
+                <span class="client-progress-project-status">
+                  <%= project.status.replace(/_/g, " ") %>
+                </span>
+
+                <h3><%= project.name %></h3>
+              </div>
+
+              <% if (project.progress !== null) { %>
+
+                <div
+                  class="client-progress-ring"
+                  style="--progress: <%= project.progress %>%"
+                  role="progressbar"
+                  aria-label="Project progress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow="<%= project.progress %>"
+                >
+                  <span><%= project.progress %>%</span>
+                </div>
+
+              <% } else { %>
+
+                <div class="client-progress-ring client-progress-ring-empty">
+                  <span>—</span>
+                </div>
+
+              <% } %>
+            </div>
+
+            <div class="client-progress-project-stats">
+              <div>
+                <strong><%= project.totalTasks %></strong>
+                <span>Total tasks</span>
+              </div>
+
+              <div>
+                <strong><%= project.completedTasks %></strong>
+                <span>Completed</span>
+              </div>
+
+              <div>
+                <strong><%= project.delayedTasks %></strong>
+                <span>Delayed</span>
+              </div>
+            </div>
+
+            <a
+              class="client-progress-project-link"
+              href="/client/projects/<%= project._id %>"
+            >
+              Project overview <span aria-hidden="true">→</span>
+            </a>
+
+          </article>
+
+        <% }) %>
+
+      </div>
+
+    <% } %>
+
+  </section>
+
+  <!-- Task-level progress -->
+  <section class="client-progress-section">
+
+    <div class="client-progress-section-heading">
+      <div>
+        <span class="client-eyebrow">WORK BREAKDOWN</span>
+        <h2>Task progress</h2>
+        <p>Detailed task status and deadlines across your projects.</p>
+      </div>
+    </div>
+
+    <% if (tasks.length === 0) { %>
+
+      <div class="client-progress-empty">
+        <h3>No tasks available</h3>
+        <p>Task-level progress will appear when projects have tasks.</p>
+      </div>
+
+    <% } else { %>
+
+      <div class="client-progress-table-wrap">
+        <table class="client-progress-table">
+
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Progress</th>
+              <th>Deadline</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% tasks.forEach(task => { %>
+
+              <tr>
+                <td data-label="Task">
+                  <strong class="client-progress-task-name">
+                    <%= task.taskName %>
+                  </strong>
+                </td>
+
+                <td data-label="Project">
+                  <span class="client-progress-project-name">
+                    <%= task.projectName %>
+                  </span>
+                </td>
+
+                <td data-label="Status">
+                  <span class="client-project-status">
+                    <%= task.status.replace(/_/g, " ") %>
+                  </span>
+                </td>
+
+                <td data-label="Progress">
+
+                  <% if (task.progress !== null) { %>
+
+                    <div class="client-progress-task-cell">
+                      <div class="client-progress-task-label">
+                        <strong><%= task.progress %>%</strong>
+                      </div>
+
+                      <div class="client-progress-meter">
+                        <div
+                          class="client-mini-progress-fill"
+                          style="width: <%= task.progress %>%"
+                        ></div>
+                      </div>
+                    </div>
+
+                  <% } else { %>
+
+                    <span class="client-progress-unrecorded">
+                      Not recorded
+                    </span>
+
+                  <% } %>
+
+                </td>
+
+                <td data-label="Deadline">
+                  <%= task.deadlineLabel %>
+                </td>
+
+                <td>
+                  <a
+                    class="client-progress-row-link"
+                    href="/client/projects/<%= task.projectId %>"
+                    aria-label="View project for <%= task.taskName %>"
+                  >
+                    →
+                  </a>
+                </td>
+              </tr>
+
+            <% }) %>
+          </tbody>
+
+        </table>
+      </div>
+
+    <% } %>
+
+  </section>
+
+  <p class="client-progress-footer-note">
+    Progress is read-only for Clients. Task updates are recorded through
+    the existing Worker and Engineer workflows.
+  </p>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

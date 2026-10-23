@@ -1,0 +1,397 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<%
+    const inProgressCount = tasks.filter(
+        task => task.status === "IN_PROGRESS"
+    ).length;
+
+    const completedCount = tasks.filter(
+        task =>
+            task.status === "COMPLETED" ||
+            Number(task.progress) === 100
+    ).length;
+
+    const delayedCount = tasks.filter(
+        task =>
+            task.status === "DELAYED" ||
+            task.deadlineStatus === "OVERDUE"
+    ).length;
+%>
+
+<section class="worker-tasks-redesign">
+
+    <!-- Page heading -->
+    <header class="wtr-page-header">
+        <div>
+            <span class="wtr-eyebrow">WORKER PORTAL / TASKS</span>
+            <h1>My Tasks</h1>
+            <p>
+                Track your assigned construction activities,
+                monitor deadlines, and submit work updates.
+            </p>
+        </div>
+
+        <a href="/worker/dashboard" class="wtr-dashboard-link">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10.5 12 3l9 7.5V21h-6v-7H9v7H3z"/>
+            </svg>
+            Dashboard
+        </a>
+    </header>
+
+    <!-- Summary cards -->
+    <div class="wtr-summary-grid">
+
+        <article class="wtr-summary-card wtr-summary-primary">
+            <div class="wtr-summary-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4" y="3" width="16" height="18" rx="3"/>
+                    <path d="M8 8h8M8 12h8M8 16h5"/>
+                </svg>
+            </div>
+            <div>
+                <span>Tasks in view</span>
+                <strong><%= tasks.length %></strong>
+                <small>Matching your filters</small>
+            </div>
+        </article>
+
+        <article class="wtr-summary-card">
+            <div class="wtr-summary-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 7v5l3 2"/>
+                </svg>
+            </div>
+            <div>
+                <span>In progress</span>
+                <strong><%= inProgressCount %></strong>
+                <small>Currently underway</small>
+            </div>
+        </article>
+
+        <article class="wtr-summary-card">
+            <div class="wtr-summary-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="m8 12 2.5 2.5L16 9"/>
+                </svg>
+            </div>
+            <div>
+                <span>Completed</span>
+                <strong><%= completedCount %></strong>
+                <small>Work completed</small>
+            </div>
+        </article>
+
+        <article class="wtr-summary-card">
+            <div class="wtr-summary-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3 2.8 20h18.4L12 3z"/>
+                    <path d="M12 9v5M12 17h.01"/>
+                </svg>
+            </div>
+            <div>
+                <span>Delayed</span>
+                <strong><%= delayedCount %></strong>
+                <small>Require attention</small>
+            </div>
+        </article>
+
+    </div>
+
+    <!-- Filters -->
+    <section class="wtr-filter-panel">
+
+        <div class="wtr-section-heading">
+            <div>
+                <h2>Find a task</h2>
+                <p>Search and filter your assigned activities.</p>
+            </div>
+
+            <a href="/worker/tasks" class="wtr-reset-link">
+                Reset filters
+            </a>
+        </div>
+
+        <form action="/worker/tasks" method="GET" class="wtr-filter-form">
+
+            <div class="wtr-field wtr-search-field">
+                <label for="search">Search tasks</label>
+                <div class="wtr-input-with-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m16 16 4 4"/>
+                    </svg>
+                    <input
+                        type="search"
+                        id="search"
+                        name="search"
+                        value="<%= filters.search || '' %>"
+                        placeholder="Search by task name..."
+                    >
+                </div>
+            </div>
+
+            <div class="wtr-field">
+                <label for="status">Task status</label>
+                <select id="status" name="status">
+                    <option value="ALL"
+                        <%= filters.status === "ALL" ? "selected" : "" %>>
+                        All statuses
+                    </option>
+
+                    <% [
+                        ["NOT_STARTED", "Not started"],
+                        ["IN_PROGRESS", "In progress"],
+                        ["ON_HOLD", "On hold"],
+                        ["COMPLETED", "Completed"],
+                        ["DELAYED", "Delayed"]
+                    ].forEach(([value, label]) => { %>
+
+                        <option
+                            value="<%= value %>"
+                            <%= filters.status === value ? "selected" : "" %>>
+                            <%= label %>
+                        </option>
+
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="wtr-field">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                    <option value="ALL"
+                        <%= filters.priority === "ALL" ? "selected" : "" %>>
+                        All priorities
+                    </option>
+
+                    <% ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                        .forEach(value => { %>
+
+                        <option
+                            value="<%= value %>"
+                            <%= filters.priority === value ? "selected" : "" %>>
+                            <%= value.charAt(0) + value.slice(1).toLowerCase() %>
+                        </option>
+
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="wtr-filter-buttons">
+                <button type="submit" class="wtr-primary-button">
+                    Apply filters
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h14M13 6l6 6-6 6"/>
+                    </svg>
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+    <!-- Task list -->
+    <section class="wtr-tasks-section">
+
+        <div class="wtr-section-heading wtr-results-heading">
+            <div>
+                <span class="wtr-eyebrow">YOUR WORKLOAD</span>
+                <h2>Assigned activities</h2>
+                <p>
+                    Open a task to review its details or submit an update.
+                </p>
+            </div>
+
+            <span class="wtr-results-count">
+                <%= tasks.length %>
+                <%= tasks.length === 1 ? "task" : "tasks" %>
+            </span>
+        </div>
+
+        <% if (tasks.length === 0) { %>
+
+            <div class="wtr-empty-state">
+                <div class="wtr-empty-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="3" width="16" height="18" rx="3"/>
+                        <path d="M8 9h8M8 13h5"/>
+                    </svg>
+                </div>
+
+                <h3>No tasks found</h3>
+                <p>
+                    No assigned tasks match your current filters.
+                    Try another search or reset your filters.
+                </p>
+
+                <a href="/worker/tasks" class="wtr-primary-button">
+                    Show all tasks
+                </a>
+            </div>
+
+        <% } else { %>
+
+            <div class="wtr-task-grid">
+
+                <% tasks.forEach(task => {
+                    const taskProgress = Math.max(
+                        0,
+                        Math.min(100, Number(task.progress) || 0)
+                    );
+
+                    const displayStatus = String(
+                        task.status || "NOT_STARTED"
+                    ).replace(/_/g, " ");
+
+                    const statusClass = String(
+                        task.status || "NOT_STARTED"
+                    ).toLowerCase().replace(/_/g, "-");
+
+                    const priorityClass = String(
+                        task.priority || "MEDIUM"
+                    ).toLowerCase();
+
+                    const deadlineClass = String(
+                        task.deadlineStatus || "UNKNOWN"
+                    ).toLowerCase().replace(/_/g, "-");
+                %>
+
+                    <article class="wtr-task-card">
+
+                        <div class="wtr-card-topline">
+                            <span class="wtr-project-label">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-7h8v7"/>
+                                </svg>
+                                <%= task.project
+                                    ? task.project.name
+                                    : "Project unavailable" %>
+                            </span>
+
+                            <span class="wtr-status-badge wtr-status-<%= statusClass %>">
+                                <span></span>
+                                <%= displayStatus %>
+                            </span>
+                        </div>
+
+                        <h3 class="wtr-task-title">
+                            <%= task.name %>
+                        </h3>
+
+                        <p class="wtr-task-description">
+                            <%= task.description ||
+                                "No additional instructions provided." %>
+                        </p>
+
+                        <div class="wtr-task-info-grid">
+
+                            <div class="wtr-task-info">
+                                <span>Priority</span>
+                                <strong class="wtr-priority-<%= priorityClass %>">
+                                    <span class="wtr-priority-dot"></span>
+                                    <%= task.priority || "MEDIUM" %>
+                                </strong>
+                            </div>
+
+                            <div class="wtr-task-info">
+                                <span>Deadline</span>
+                                <strong class="wtr-deadline-value">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <rect x="3" y="5" width="18" height="16" rx="2"/>
+                                        <path d="M16 3v4M8 3v4M3 10h18"/>
+                                    </svg>
+                                    <%= task.deadline
+                                        ? new Date(task.deadline).toLocaleDateString("en-IN", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric"
+                                        })
+                                        : "Not set" %>
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div class="wtr-deadline-row">
+                            <span>Deadline status</span>
+                            <span class="wtr-deadline-badge wtr-deadline-<%= deadlineClass %>">
+                                <%= String(
+                                    task.deadlineStatus || "UNKNOWN"
+                                ).replace(/_/g, " ") %>
+                            </span>
+                        </div>
+
+                        <div class="wtr-progress-block">
+                            <div class="wtr-progress-heading">
+                                <span>Task progress</span>
+                                <strong><%= taskProgress %>%</strong>
+                            </div>
+
+                            <div
+                                class="wtr-progress-track"
+                                role="progressbar"
+                                aria-label="Task progress"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="<%= taskProgress %>"
+                            >
+                                <div
+                                    class="wtr-progress-fill"
+                                    style="width: <%= taskProgress %>%"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <div class="wtr-task-actions">
+                            <a
+                                href="/worker/tasks/<%= task._id %>"
+                                class="wtr-view-task"
+                            >
+                                View task
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M5 12h14M13 6l6 6-6 6"/>
+                                </svg>
+                            </a>
+
+                            <div class="wtr-secondary-actions">
+                                <a
+                                    href="/worker/tasks/<%= task._id %>/progress"
+                                    class="wtr-icon-action"
+                                    title="Submit progress update"
+                                >
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M12 20H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v5"/>
+                                        <path d="m9 15 8-8 4 4-8 8-5 1z"/>
+                                    </svg>
+                                    Progress
+                                </a>
+
+                                <a
+                                    href="/worker/tasks/<%= task._id %>/daily-report"
+                                    class="wtr-icon-action"
+                                    title="Submit daily report"
+                                >
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <path d="M14 2v6h6M8 13h8M8 17h8"/>
+                                    </svg>
+                                    Daily report
+                                </a>
+                            </div>
+                        </div>
+
+                    </article>
+
+                <% }) %>
+
+            </div>
+
+        <% } %>
+
+    </section>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

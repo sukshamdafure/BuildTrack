@@ -1,0 +1,52 @@
+<%
+    const path = typeof currentPath === "string" ? currentPath : "";
+
+    function navActive(href) {
+        if (!href) return "";
+        if (path === href) return "is-active";
+        if (href.endsWith("/dashboard")) return "";
+        if (path.indexOf(href + "/") === 0) return "is-active";
+        return "";
+    }
+%>
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <span class="sidebar-title">
+            <%= currentUser.role %> panel
+        </span>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Primary">
+        <% if (currentUser.role === "ENGINEER") { %>
+            <a href="/engineer/dashboard" class="sidebar-link <%= navActive('/engineer/dashboard') %>">Dashboard</a>
+            <a href="/engineer/projects" class="sidebar-link <%= navActive('/engineer/projects') %>">Projects</a>
+            <a href="/engineer/tasks" class="sidebar-link <%= navActive('/engineer/tasks') %>">Tasks</a>
+            <a href="/engineer/workers" class="sidebar-link <%= navActive('/engineer/workers') %>">Workers</a>
+            <a href="/engineer/materials" class="sidebar-link <%= navActive('/engineer/materials') %>">Materials</a>
+            <a href="/engineer/expenses" class="sidebar-link <%= navActive('/engineer/expenses') %>">Expenses</a>
+            <a href="/engineer/milestones" class="sidebar-link <%= navActive('/engineer/milestones') %>">Milestones</a>
+            <a href="/engineer/progress-reviews" class="sidebar-link <%= navActive('/engineer/progress-reviews') %>">Progress Reviews</a>
+            <a href="/engineer/daily-reports" class="sidebar-link <%= navActive('/engineer/daily-reports') %>">Daily Progress Reports</a>
+        <% } else if (currentUser.role === "WORKER") { %>
+            <a href="/worker/dashboard" class="sidebar-link <%= navActive('/worker/dashboard') %>">Dashboard</a>
+            <a href="/worker/tasks" class="sidebar-link <%= navActive('/worker/tasks') %>">My Tasks</a>
+            <a href="/worker/reports" class="sidebar-link <%= navActive('/worker/reports') %>">Daily Reports</a>
+            <a href="/worker/progress" class="sidebar-link <%= navActive('/worker/progress') %>">Progress</a>
+        <% } else if (currentUser.role === "CLIENT") { %>
+            <a href="/client/dashboard" class="sidebar-link <%= navActive('/client/dashboard') %>">Dashboard</a>
+            <a href="/client/projects" class="sidebar-link <%= navActive('/client/projects') %>">Projects</a>
+            <a href="/client/progress" class="sidebar-link <%= navActive('/client/progress') %>">Progress</a>
+            <a href="/client/milestones" class="sidebar-link <%= navActive('/client/milestones') %>">Milestones</a>
+            <a href="/client/reports" class="sidebar-link <%= navActive('/client/reports') %>">Reports</a>
+        <% } else if (currentUser.role === "ADMIN") { %>
+            <a href="/admin/dashboard" class="sidebar-link <%= navActive('/admin/dashboard') %>">Dashboard</a>
+            <a href="/admin/users" class="sidebar-link <%= navActive('/admin/users') %>">Users</a>
+            <a href="/admin/projects" class="sidebar-link <%= navActive('/admin/projects') %>">Projects</a>
+        <% } %>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="/logout" class="sidebar-logout">Logout</a>
+    </div>
+</aside>

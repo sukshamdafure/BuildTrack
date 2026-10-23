@@ -1,0 +1,588 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+        <h1><%= project.name %></h1>
+
+        <p>
+            <%= project.projectType || "Construction Project" %>
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+
+        <a
+                href="/engineer/projects/<%= project._id %>/tasks/new"
+                class="page-action-button"
+            >
+                + New Task
+            </a>
+
+        <a
+    href="/engineer/projects/<%= project._id %>/materials"
+    class="secondary-button"
+>
+    Materials &amp; Inventory
+</a>
+
+        <a
+            href="/engineer/projects/<%= project._id %>/edit"
+            class="page-action-button"
+        >
+            Edit Project
+        </a>
+
+        <a
+            href="/engineer/projects"
+            class="secondary-button"
+        >
+            Back to Projects
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Project Overview -->
+
+<section class="project-overview">
+
+    <!-- Project Hero -->
+
+    <div class="project-overview-header">
+
+        <div class="project-overview-title">
+
+            <div class="project-type-mark">
+                <%= project.projectType
+                    ? project.projectType.charAt(0).toUpperCase()
+                    : "P" %>
+            </div>
+
+            <div>
+                <span class="project-overview-label">
+                    <%= project.projectType || "Construction Project" %>
+                </span>
+
+                <h2>
+                    <%= project.name %>
+                </h2>
+
+                <p>
+                    <%= project.siteLocation %>
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="project-overview-status">
+
+            <span class="status-badge status-active">
+                <%= project.status.replace("_", " ") %>
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- KPI Cards -->
+
+    <div class="project-kpi-grid">
+
+        <div class="project-kpi-card">
+
+            <span class="project-kpi-label">
+                Overall Progress
+            </span>
+
+            <strong class="project-kpi-value">
+                <%= project.progress %>%
+            </strong>
+
+            <div class="mini-progress">
+
+                <div
+                    class="mini-progress-fill"
+                    style="width: <%= project.progress %>%"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="project-kpi-card">
+
+            <span class="project-kpi-label">
+                Project Budget
+            </span>
+
+            <strong class="project-kpi-value">
+                ₹<%= Number(project.budget).toLocaleString("en-IN") %>
+            </strong>
+
+            <span class="project-kpi-description">
+                Allocated budget
+            </span>
+
+        </div>
+
+        <div class="project-kpi-card">
+
+            <span class="project-kpi-label">
+                Start Date
+            </span>
+
+            <strong class="project-kpi-value project-kpi-date">
+                <%= new Date(project.startDate).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }) %>
+            </strong>
+
+            <span class="project-kpi-description">
+                Project commencement
+            </span>
+
+        </div>
+
+
+        <div class="project-kpi-card">
+
+            <span class="project-kpi-label">
+                Expected Completion
+            </span>
+
+            <strong class="project-kpi-value project-kpi-date">
+                <%= new Date(project.expectedCompletionDate).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }) %>
+            </strong>
+
+            <span class="project-kpi-description">
+                Target completion
+            </span>
+
+        </div>
+
+    </div>
+
+
+<!-- Project Financial Summary -->
+
+<section class="dashboard-section">
+    
+
+    <div class="project-kpi-grid">
+        <div class="project-kpi-card">
+            <span class="project-kpi-label">Allocated Budget</span>
+            <strong class="project-kpi-value">
+                ₹<%= financialSummary.allocatedBudget.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) %>
+            </strong>
+        </div>
+
+        <div class="project-kpi-card">
+            <span class="project-kpi-label">Actual Spending</span>
+            <strong class="project-kpi-value">
+                ₹<%= financialSummary.actualSpending.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) %>
+            </strong>
+        </div>
+
+        <div class="project-kpi-card">
+            <span class="project-kpi-label">Budget Remaining</span>
+            <strong class="project-kpi-value">
+                ₹<%= financialSummary.remainingBudget.toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) %>
+            </strong>
+            <span class="project-kpi-description">
+                <%= financialSummary.remainingBudget < 0
+                    ? "Project is over budget"
+                    : "Available against allocated budget" %>
+            </span>
+        </div>
+
+        <div class="project-kpi-card">
+            <span class="project-kpi-label">Budget Utilization</span>
+            <strong class="project-kpi-value">
+                <%= financialSummary.budgetUtilization %>%
+            </strong>
+
+            <div class="mini-progress">
+                <div
+                    class="mini-progress-fill"
+                    style="width: <%= Math.min(financialSummary.budgetUtilization, 100) %>%"
+                ></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- Project Information -->
+
+    <div class="project-overview-body">
+
+        <div class="project-info-panel">
+
+            <div class="overview-panel-heading">
+
+                <div>
+                    <span>Project Information</span>
+                    <h3>Project Details</h3>
+                </div>
+
+            </div>
+
+
+            <div class="project-info-list">
+
+                <div class="project-info-row">
+
+                    <span>Client</span>
+
+                    <strong>
+                        <%= project.client
+                            ? project.client.name
+                            : "N/A" %>
+                    </strong>
+
+                </div>
+
+
+                <div class="project-info-row">
+
+                    <span>Client Email</span>
+
+                    <strong>
+                        <%= project.client
+                            ? project.client.email
+                            : "N/A" %>
+                    </strong>
+
+                </div>
+
+
+                <div class="project-info-row">
+
+                    <span>Site Location</span>
+
+                    <strong>
+                        <%= project.siteLocation %>
+                    </strong>
+
+                </div>
+
+
+                <div class="project-info-row">
+
+                    <span>Project Type</span>
+
+                    <strong>
+                        <%= project.projectType || "Not specified" %>
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Progress Visualization -->
+
+        <div class="project-progress-panel">
+
+            <div class="overview-panel-heading">
+
+                <div>
+                    <span>Construction Progress</span>
+                    <h3>Overall Completion</h3>
+                </div>
+
+            </div>
+
+
+            <div class="progress-visual">
+
+                <div
+                    class="progress-ring"
+                    style="--progress: <%= project.progress %>%"
+                >
+
+                    <div class="progress-ring-inner">
+
+                        <strong>
+                            <%= project.progress %>%
+                        </strong>
+
+                        <span>
+                            Complete
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="progress-summary">
+
+                    <div>
+                        <span>Current Status</span>
+
+                        <strong>
+                            <%= project.status.replace("_", " ") %>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Target Date</span>
+
+                        <strong>
+                            <%= new Date(project.expectedCompletionDate)
+                                .toLocaleDateString("en-IN", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric"
+                                }) %>
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Budget vs. Actual Spending Chart -->
+
+<section class="dashboard-section">
+    <div class="section-header">
+        <div>
+            <h2>Budget vs. Actual Spending</h2>
+            <p>Compare the allocated budget with recorded project expenses.</p>
+        </div>
+    </div>
+
+    <div class="analytics-panel">
+        <div class="analytics-panel-heading">
+            <div>
+                <h2>Financial Overview</h2>
+                <p>Amounts shown in Indian rupees (₹).</p>
+            </div>
+
+            <span class="panel-tag">PROJECT FINANCES</span>
+        </div>
+
+        <div class="budget-spending-chart-wrapper">
+            <canvas
+                id="budgetSpendingChart"
+                role="img"
+                aria-label="Bar chart comparing the allocated project budget with actual recorded spending"
+            >
+                Budget versus actual spending chart.
+            </canvas>
+        </div>
+    </div>
+</section>
+
+<!-- Progress -->
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Project Progress</h2>
+
+            <p>
+                Current overall project completion.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="large-progress">
+
+        <div class="progress-header">
+
+            <span>Overall Progress</span>
+
+            <strong>
+                <%= project.progress %>%
+            </strong>
+
+        </div>
+
+        <div class="progress-bar large-progress-bar">
+
+            <div
+                class="progress-fill"
+                style="width: <%= project.progress %>%"
+            ></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Description -->
+
+<section class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Description</h2>
+        </div>
+
+    </div>
+
+
+    <div class="project-description">
+
+        <% if (project.description) { %>
+
+            <p>
+                <%= project.description %>
+            </p>
+
+        <% } else { %>
+
+            <p>
+                No project description has been provided.
+            </p>
+
+        <% } %>
+
+    </div>
+
+</section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+<script>
+(() => {
+    const canvas = document.getElementById("budgetSpendingChart");
+
+    if (!canvas || typeof Chart === "undefined") {
+        console.error("Budget chart could not be initialized.");
+        return;
+    }
+
+    const allocatedBudget = <%- JSON.stringify(financialSummary.allocatedBudget) %>;
+    const actualSpending = <%- JSON.stringify(financialSummary.actualSpending) %>;
+
+    // Reuse the existing dashboard chart palette.
+    const palette = {
+        coral: "#D65F47",
+        dark: "#232323",
+        secondary: "#2A2A2A",
+        gray: "#B6B6B6"
+    };
+
+    const formatRupees = (value) =>
+        "₹" + Number(value).toLocaleString("en-IN", {
+            maximumFractionDigits: 2
+        });
+
+    new Chart(canvas, {
+        type: "bar",
+
+        data: {
+            labels: ["Allocated Budget", "Actual Spending"],
+
+            datasets: [{
+                label: "Amount",
+                data: [allocatedBudget, actualSpending],
+
+                backgroundColor: [
+                    palette.gray,
+                    palette.coral
+                ],
+
+                hoverBackgroundColor: [
+                    palette.secondary,
+                    palette.dark
+                ],
+
+                borderRadius: 6,
+                borderSkipped: false,
+                barThickness: 34
+            }]
+        },
+
+        options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: (context) =>
+                            " " + formatRupees(context.parsed.x)
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    beginAtZero: true,
+
+                    ticks: {
+                        callback: (value) => {
+                            const number = Number(value);
+
+                            return "₹" + number.toLocaleString("en-IN", {
+                                notation: "compact",
+                                maximumFractionDigits: 1
+                            });
+                        }
+                    },
+
+                    title: {
+                        display: true,
+                        text: "Amount (₹)"
+                    }
+                },
+
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>
+
+<%- include("../partials/dashboard-layout-end") %>

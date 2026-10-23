@@ -1,0 +1,176 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="client-report-details-page">
+
+  <a href="/client/reports" class="client-overview-back">
+    <span aria-hidden="true">←</span>
+    Back to Reports
+  </a>
+
+  <!-- Report heading -->
+  <header class="client-report-details-hero">
+    <div>
+      <span class="client-eyebrow">DAILY SITE REPORT</span>
+      <h1><%= report.taskName %></h1>
+      <p><%= report.projectName %></p>
+    </div>
+
+    <span class="client-project-status">
+      <%= report.status %>
+    </span>
+  </header>
+
+  <!-- Report metadata -->
+  <section class="client-report-details-metadata">
+
+    <article>
+      <span>Report date</span>
+      <strong><%= report.reportDateLabel %></strong>
+    </article>
+
+    <article>
+      <span>Submitted by</span>
+      <strong><%= report.workerName %></strong>
+    </article>
+
+    <article>
+      <span>Labour count</span>
+      <strong><%= report.labourCount %></strong>
+    </article>
+
+    <article>
+      <span>Project</span>
+      <strong><%= report.projectName %></strong>
+    </article>
+
+  </section>
+
+  <!-- Work information -->
+  <section class="client-report-detail-card">
+    <span class="client-eyebrow">DAILY ACTIVITY</span>
+    <h2>Work performed</h2>
+
+    <p class="client-report-detail-text">
+      <%= report.workPerformed %>
+    </p>
+  </section>
+
+  <div class="client-report-detail-grid">
+
+    <section class="client-report-detail-card">
+      <h2>Materials used</h2>
+      <p class="client-report-detail-text">
+        <%= report.materialsUsed || "No materials recorded." %>
+      </p>
+    </section>
+
+    <section class="client-report-detail-card">
+      <h2>Issues encountered</h2>
+      <p class="client-report-detail-text">
+        <%= report.issues || "No issues reported." %>
+      </p>
+    </section>
+
+  </div>
+
+  <section class="client-report-detail-card">
+    <h2>Additional remarks</h2>
+    <p class="client-report-detail-text">
+      <%= report.remarks || "No additional remarks." %>
+    </p>
+  </section>
+
+  <!-- Photos -->
+  <section class="client-report-detail-card">
+
+    <div class="client-report-photos-heading">
+      <div>
+        <span class="client-eyebrow">SITE EVIDENCE</span>
+        <h2>Construction photographs</h2>
+      </div>
+
+      <span>
+        <%= report.photos ? report.photos.length : 0 %> photo(s)
+      </span>
+    </div>
+
+    <% if (report.photos && report.photos.length > 0) { %>
+
+      <div class="client-report-detail-photos">
+
+        <% report.photos.forEach(photo => { %>
+          <a
+            href="<%= photo.url %>"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open construction photograph in a new tab"
+          >
+            <img
+              src="<%= photo.url %>"
+              alt="Construction site photograph"
+              loading="lazy"
+            >
+          </a>
+        <% }) %>
+
+      </div>
+
+    <% } else { %>
+
+      <p class="client-report-detail-text">
+        No photographs were attached to this report.
+      </p>
+
+    <% } %>
+
+  </section>
+
+  <!-- Review information -->
+  <section class="client-report-detail-card">
+
+    <span class="client-eyebrow">VERIFICATION</span>
+    <h2>Engineer review</h2>
+
+    <div class="client-report-review-info">
+      <div>
+        <span>Report status</span>
+        <strong><%= report.status %></strong>
+      </div>
+
+      <div>
+        <span>Reviewed by</span>
+        <strong>
+          <%= report.status === "REVIEWED"
+            ? report.reviewerName
+            : "Awaiting review" %>
+        </strong>
+      </div>
+
+      <div>
+        <span>Review date</span>
+        <strong><%= report.reviewedAtLabel %></strong>
+      </div>
+    </div>
+
+    <% if (report.status === "REVIEWED" && report.reviewRemarks) { %>
+      <div class="client-report-review-remarks">
+        <h3>Review remarks</h3>
+        <p class="client-report-detail-text">
+          <%= report.reviewRemarks %>
+        </p>
+      </div>
+    <% } %>
+
+  </section>
+
+  <a
+    class="client-secondary-button client-report-back-button"
+    href="/client/reports"
+  >
+    <span aria-hidden="true">←</span>
+    Return to Reports
+  </a>
+
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

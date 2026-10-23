@@ -1,0 +1,94 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="worker-history-page">
+    <div class="worker-history-header">
+        <div>
+            <h1>My Daily Reports</h1>
+            <p>
+                View your submitted daily progress reports and review status.
+            </p>
+        </div>
+
+        <span class="worker-history-count">
+            Total reports: <%= reports.length %>
+        </span>
+    </div>
+
+    <% if (reports.length === 0) { %>
+        <div class="worker-history-empty">
+            <h2>No reports submitted yet</h2>
+            <p>
+                Open one of your assigned tasks to submit your first daily report.
+            </p>
+
+            <a href="/worker/tasks" class="page-action-button">
+                View My Tasks
+            </a>
+        </div>
+    <% } else { %>
+        <div class="worker-history-table-wrap">
+            <table class="worker-history-table">
+                <thead>
+                    <tr>
+                        <th>Report Date</th>
+                        <th>Project</th>
+                        <th>Task</th>
+                        <th>Labour</th>
+                        <th>Photos</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% reports.forEach(report => { %>
+                        <tr>
+                            <td data-label="Report Date">
+                                <%= report.reportDate
+                                    ? new Date(report.reportDate).toLocaleDateString("en-IN")
+                                    : "—" %>
+                            </td>
+
+                            <td data-label="Project">
+                                <%= report.project?.name || "Project unavailable" %>
+                            </td>
+
+                            <td data-label="Task">
+                                <%= report.task?.name || "Task unavailable" %>
+                            </td>
+
+                            <td data-label="Labour">
+                                <%= report.labourCount ?? 0 %>
+                            </td>
+
+                            <td data-label="Photos">
+                                <%= report.photos?.length || 0 %>
+                            </td>
+
+                            <td data-label="Status">
+                                <span class="worker-history-status">
+                                    <%= report.status || "SUBMITTED" %>
+                                </span>
+                            </td>
+
+                            <td data-label="Action">
+                                <% if (report.task?._id) { %>
+                                    <a
+                                        class="page-action-button"
+                                        href="/worker/tasks/<%= report.task._id %>"
+                                    >
+                                        View Task
+                                    </a>
+                                <% } else { %>
+                                    <span>Unavailable</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

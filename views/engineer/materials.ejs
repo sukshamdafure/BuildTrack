@@ -1,0 +1,256 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+    <div>
+        <span class="page-eyebrow">MATERIAL MANAGEMENT</span>
+
+        <h1>
+            <%= project ? project.name + " — Materials" : "Material Inventory" %>
+        </h1>
+
+        <p>
+            Track construction supplies, available quantities, and stock levels.
+        </p>
+    </div>
+
+    <div class="page-header-actions">
+        <% if (project) { %>
+            <a href="/engineer/projects/<%= project._id %>"
+               class="secondary-button">
+                Back to Project
+            </a>
+
+            <a href="/engineer/projects/<%= project._id %>/materials/new"
+               class="page-action-button">
+                + Add Material
+            </a>
+        <% } else { %>
+            <a href="/engineer/projects" class="secondary-button">
+                View Projects
+            </a>
+        <% } %>
+    </div>
+</div>
+
+<div class="task-summary-grid">
+    <div class="task-summary-card">
+        <span>Total Materials</span>
+        <strong><%= summary.totalMaterials %></strong>
+    </div>
+
+    <div class="task-summary-card">
+        <span>Low Stock</span>
+        <strong><%= summary.lowStock %></strong>
+    </div>
+
+    <div class="task-summary-card">
+        <span>Out of Stock</span>
+        <strong><%= summary.outOfStock %></strong>
+    </div>
+</div>
+
+<% if (!project) { %>
+    <section class="dashboard-section">
+        <div class="section-header">
+            <div>
+                <h2>Project Inventory</h2>
+                <p>Select a project to view or add its materials.</p>
+            </div>
+        </div>
+
+        <% if (projects && projects.length > 0) { %>
+            <div class="material-project-grid">
+                <% projects.forEach(item => { %>
+                    <article class="material-project-card">
+                        <h3><%= item.name %></h3>
+
+                        <div class="material-project-actions">
+                            <a href="/engineer/projects/<%= item._id %>/materials"
+                               class="secondary-button">
+                                View Inventory
+                            </a>
+
+                            <a href="/engineer/projects/<%= item._id %>/materials/new"
+                               class="page-action-button">
+                                + Add Material
+                            </a>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty-dashboard-state">
+                <h3>No projects found</h3>
+                <p>Create a project before adding its construction materials.</p>
+                <a href="/engineer/projects/new" class="page-action-button">
+                    Create Project
+                </a>
+            </div>
+        <% } %>
+    </section>
+<% } %>
+
+<section class="dashboard-section">
+    <div class="section-header">
+        <div>
+            <h2><%= project ? "Project Materials" : "All Materials" %></h2>
+            <p>
+                Quantities are displayed in each material's recorded unit.
+            </p>
+        </div>
+    </div>
+
+    <% if (materials.length === 0) { %>
+        <div class="empty-dashboard-state">
+            <h3>No materials recorded yet</h3>
+            <p>
+                Add construction materials to track stock and usage for this project.
+            </p>
+
+            <% if (project) { %>
+                <a href="/engineer/projects/<%= project._id %>/materials/new"
+                   class="page-action-button">
+                    Add First Material
+                </a>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="task-table-wrapper">
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+
+                        <% if (!project) { %>
+                            <th>Project</th>
+                        <% } %>
+
+                        <th>Supplier</th>
+                        <th>Initial</th>
+                        <th>Used</th>
+                        <th>Remaining</th>
+                        <th>Minimum</th>
+                        <th>Cost</th>
+                        <th>Stock Status</th>
+                        <th>Record Usage</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <% materials.forEach(material => { %>
+                        <tr>
+                            <td>
+                                <div class="task-name-cell">
+                                    <strong><%= material.name %></strong>
+                                    <span><%= material.unit %></span>
+                                </div>
+                            </td>
+
+                            <% if (!project) { %>
+                                <td>
+                                    <% if (material.project) { %>
+                                        <a href="/engineer/projects/<%= material.project._id %>/materials"
+                                           class="task-name-link">
+                                            <%= material.project.name %>
+                                        </a>
+                                    <% } else { %>
+                                        —
+                                    <% } %>
+                                </td>
+                            <% } %>
+
+                            <td>
+                                <%= material.supplier || "—" %>
+                            </td>
+
+                            <td>
+                                <%= material.initialQuantity %>
+                            </td>
+
+                            <td>
+                                <%= material.usedQuantity %>
+                                
+                            </td>
+
+                            <td>
+                                <strong>
+                                    <%= material.remainingQuantity %>
+                                    
+                                </strong>
+                            </td>
+
+                            <td>
+                                <%= material.minimumStockLevel %>
+                                
+                            </td>
+
+                            <td><%= Number(material.cost).toFixed(2) * material.unit %></td>
+
+                            <td>
+                                <% if (Number(material.remainingQuantity) <= 0) { %>
+                                    <span class="material-status material-status-out">
+                                        Out of Stock
+                                    </span>
+                                <% } else if (
+                                    Number(material.remainingQuantity) <=
+                                    Number(material.minimumStockLevel)
+                                ) { %>
+                                    <span class="material-status material-status-low">
+                                        Low Stock
+                                    </span>
+                                <% } else { %>
+                                    <span class="material-status material-status-good">
+                                        In Stock
+                                    </span>
+                                <% } %>
+                            </td>
+
+                            <td>
+                                <% if (Number(material.remainingQuantity) > 0) { %>
+                                    <form
+                                        action="/engineer/materials/<%= material._id %>/usage"
+                                        method="POST"
+                                        class="material-usage-form"
+                                    >
+                                        <label
+                                            class="material-usage-label"
+                                            for="usage-<%= material._id %>"
+                                        >
+                                            Quantity (<%= material.unit %>)
+                                        </label>
+
+                                        <input
+                                            id="usage-<%= material._id %>"
+                                            type="number"
+                                            name="quantity"
+                                            min="0.01"
+                                            max="<%= material.remainingQuantity %>"
+                                            step="any"
+                                            required
+                                            class="material-usage-input"
+                                            aria-label="Usage quantity for <%= material.name %>"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="page-action-button material-usage-button"
+                                        >
+                                            Record
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <span class="muted-text">
+                                        No stock available
+                                    </span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

@@ -1,0 +1,483 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+
+    <div>
+
+        <span class="page-eyebrow">
+            TASK MANAGEMENT
+        </span>
+
+        <h1>Edit Task</h1>
+
+        <p>
+            Update
+            <strong><%= task.name %></strong>
+        </p>
+
+    </div>
+
+    <div class="page-header-actions">
+
+        <a
+            href="/engineer/tasks/<%= task._id %>"
+            class="secondary-button"
+        >
+            Cancel
+        </a>
+
+    </div>
+
+</div>
+
+
+<form
+    action="/engineer/tasks/<%= task._id %>"
+    method="POST"
+    class="task-form"
+>
+
+
+    <!-- Basic Information -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>Basic Information</h2>
+
+            <p>
+                Update the task information.
+            </p>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group form-group-full">
+
+                <label for="name">
+                    Task Name *
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="<%= task.name %>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group form-group-full">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="4"
+                ><%= task.description || "" %></textarea>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Workers -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>Worker Assignment</h2>
+
+            <p>
+                Select workers responsible for this task.
+            </p>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="assignedWorkers">
+                Assigned Workers
+            </label>
+
+            <select
+                id="assignedWorkers"
+                name="assignedWorkers"
+                multiple
+                size="5"
+            >
+
+                <% workers.forEach(worker => { %>
+
+                    <option
+                        value="<%= worker._id %>"
+                        <%= task.assignedWorkers.some(
+                            assigned =>
+                                assigned._id.toString() === worker._id.toString()
+                        ) ? "selected" : "" %>
+                    >
+
+                        <%= worker.name %> —
+                        <%= worker.email %>
+
+                    </option>
+
+                <% }) %>
+
+            </select>
+
+            <small class="form-help">
+                Hold Command/Ctrl to select multiple workers.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <!-- Schedule -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>Schedule</h2>
+
+            <p>
+                Update the planned execution period.
+            </p>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="startDate">
+                    Start Date *
+                </label>
+
+                <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value="<%= new Date(task.startDate).toISOString().split('T')[0] %>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="deadline">
+                    Deadline *
+                </label>
+
+                <input
+                    type="date"
+                    id="deadline"
+                    name="deadline"
+                    value="<%= new Date(task.deadline).toISOString().split('T')[0] %>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="estimatedDuration">
+                    Estimated Duration
+                </label>
+
+                <input
+                    type="number"
+                    id="estimatedDuration"
+                    name="estimatedDuration"
+                    min="0"
+                    value="<%= task.estimatedDuration || "" %>"
+                    placeholder="Days"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Planning -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>Task Planning</h2>
+
+            <p>
+                Manage priority, status and progress.
+            </p>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="priority">
+                    Priority *
+                </label>
+
+                <select
+                    id="priority"
+                    name="priority"
+                    required
+                >
+
+                    <option
+                        value="LOW"
+                        <%= task.priority === "LOW" ? "selected" : "" %>
+                    >
+                        Low
+                    </option>
+
+                    <option
+                        value="MEDIUM"
+                        <%= task.priority === "MEDIUM" ? "selected" : "" %>
+                    >
+                        Medium
+                    </option>
+
+                    <option
+                        value="HIGH"
+                        <%= task.priority === "HIGH" ? "selected" : "" %>
+                    >
+                        High
+                    </option>
+
+                    <option
+                        value="CRITICAL"
+                        <%= task.priority === "CRITICAL" ? "selected" : "" %>
+                    >
+                        Critical
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status *
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                    required
+                >
+
+                    <option
+                        value="NOT_STARTED"
+                        <%= task.status === "NOT_STARTED" ? "selected" : "" %>
+                    >
+                        Not Started
+                    </option>
+
+                    <option
+                        value="IN_PROGRESS"
+                        <%= task.status === "IN_PROGRESS" ? "selected" : "" %>
+                    >
+                        In Progress
+                    </option>
+
+                    <option
+                        value="ON_HOLD"
+                        <%= task.status === "ON_HOLD" ? "selected" : "" %>
+                    >
+                        On Hold
+                    </option>
+
+                    <option
+                        value="COMPLETED"
+                        <%= task.status === "COMPLETED" ? "selected" : "" %>
+                    >
+                        Completed
+                    </option>
+
+                    <option
+                        value="DELAYED"
+                        <%= task.status === "DELAYED" ? "selected" : "" %>
+                    >
+                        Delayed
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="progress">
+                    Progress (%)
+                </label>
+
+                <input
+                    type="number"
+                    id="progress"
+                    name="progress"
+                    min="0"
+                    max="100"
+                    value="<%= task.progress %>"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="weight">
+                    Task Weight (%) *
+                </label>
+
+                <input
+                    type="number"
+                    id="weight"
+                    name="weight"
+                    min="0.01"
+                    max="100"
+                    step="0.01"
+                    value="<%= task.weight %>"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Dependencies -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>Dependencies</h2>
+
+            <p>
+                Select prerequisite tasks.
+            </p>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="dependencies">
+                Depends On
+            </label>
+
+            <select
+                id="dependencies"
+                name="dependencies"
+                multiple
+                size="5"
+            >
+
+                <% dependencies.forEach(dependency => { %>
+
+                    <option
+                        value="<%= dependency._id %>"
+                        <%= task.dependencies.some(
+                            current =>
+                                current._id.toString() === dependency._id.toString()
+                        ) ? "selected" : "" %>
+                    >
+
+                        <%= dependency.name %> —
+                        <%= dependency.status.replace("_", " ") %>
+
+                    </option>
+
+                <% }) %>
+
+            </select>
+
+            <small class="form-help">
+                The current task cannot depend on itself.
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <!-- Remarks -->
+
+    <section class="form-section">
+
+        <div class="form-section-header">
+
+            <h2>Remarks</h2>
+
+        </div>
+
+
+        <div class="form-group form-group-full">
+
+            <textarea
+                id="remarks"
+                name="remarks"
+                rows="4"
+                placeholder="Additional instructions or remarks..."
+            ><%= task.remarks || "" %></textarea>
+
+        </div>
+
+    </section>
+
+
+    <!-- Actions -->
+
+    <div class="form-actions">
+
+        <a
+            href="/engineer/tasks/<%= task._id %>"
+            class="secondary-button"
+        >
+            Cancel
+        </a>
+
+        <button
+            type="submit"
+            class="page-action-button"
+        >
+            Save Changes
+        </button>
+
+    </div>
+
+</form>
+
+
+<%- include("../partials/dashboard-layout-end") %>

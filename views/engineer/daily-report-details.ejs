@@ -1,0 +1,166 @@
+<%- include("../partials/dashboard-layout-start") %>
+
+<section class="engineer-report-details-page">
+  <div class="engineer-report-details-header">
+    <div>
+      <a
+        class="engineer-report-back-link"
+        href="/engineer/daily-reports"
+      >
+        &larr; Back to daily reports
+      </a>
+
+      <h1>Daily Report Details</h1>
+
+      <p class="engineer-reports-subtitle">
+        Complete work submission and site photographs.
+      </p>
+    </div>
+
+        <div class="page-header-actions">
+      <a
+        class="secondary-button"
+        href="/engineer/daily-reports/<%= report._id %>/pdf"
+      >
+        Download PDF
+      </a>
+
+      <span class="engineer-report-status">
+        <%= report.status %>
+      </span>
+    </div>
+  </div>
+
+  <div class="engineer-report-detail-grid">
+    <div class="engineer-report-detail-item">
+      <span>Report date</span>
+      <strong><%= report.reportDateLabel %></strong>
+    </div>
+
+    <div class="engineer-report-detail-item">
+      <span>Worker</span>
+      <strong><%= report.workerLabel %></strong>
+    </div>
+
+    <div class="engineer-report-detail-item">
+      <span>Project</span>
+      <strong><%= report.projectLabel %></strong>
+    </div>
+
+    <div class="engineer-report-detail-item">
+      <span>Task</span>
+      <strong><%= report.taskLabel %></strong>
+    </div>
+
+    <div class="engineer-report-detail-item">
+      <span>Labour count</span>
+      <strong><%= report.labourCount %></strong>
+    </div>
+  </div>
+
+  <div class="engineer-report-content-card">
+    <h2>Work performed</h2>
+    <p class="engineer-report-preserve-text">
+      <%= report.workPerformed %>
+    </p>
+  </div>
+
+  <div class="engineer-report-content-card">
+    <h2>Materials used</h2>
+    <p class="engineer-report-preserve-text">
+      <%= report.materialsUsed || "No materials recorded." %>
+    </p>
+  </div>
+
+  <div class="engineer-report-content-card">
+    <h2>Issues encountered</h2>
+    <p class="engineer-report-preserve-text">
+      <%= report.issues || "No issues reported." %>
+    </p>
+  </div>
+
+  <div class="engineer-report-content-card">
+    <h2>Additional remarks</h2>
+    <p class="engineer-report-preserve-text">
+      <%= report.remarks || "No additional remarks." %>
+    </p>
+  </div>
+
+  <div class="engineer-report-content-card">
+    <h2>Site photographs</h2>
+
+    <% if (report.photos && report.photos.length > 0) { %>
+      <div class="engineer-report-photos">
+        <% report.photos.forEach(photo => { %>
+          <a
+            href="<%= photo.url %>"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open site photograph in a new tab"
+          >
+            <img
+              src="<%= photo.url %>"
+              alt="Construction site photograph"
+              loading="lazy"
+            >
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>No site photographs were attached to this report.</p>
+    <% } %>
+  </div>
+  <% if (report.status === "PENDING") { %>
+  <div class="engineer-report-content-card">
+    <h2>Review Daily Report</h2>
+
+    <p class="engineer-report-review-description">
+      Confirm that you have checked the submitted work details.
+    </p>
+
+    <form
+      action="/engineer/daily-reports/<%= report._id %>/review"
+      method="POST"
+      class="engineer-report-review-form"
+    >
+      <div class="engineer-report-review-field">
+        <label for="reviewRemarks">Review remarks</label>
+
+        <textarea
+          id="reviewRemarks"
+          name="reviewRemarks"
+          rows="4"
+          maxlength="2000"
+          placeholder="Add observations or feedback for this report..."
+        ></textarea>
+
+        <small>Optional. Maximum 2000 characters.</small>
+      </div>
+
+      <button type="submit" class="page-action-button">
+        Mark as Reviewed
+      </button>
+    </form>
+  </div>
+<% } %>
+
+  <% if (report.status === "REVIEWED") { %>
+    <div class="engineer-report-content-card">
+      <h2>Review information</h2>
+
+      <p>
+        <strong>Reviewed on:</strong>
+        <%= report.reviewedAt
+          ? new Date(report.reviewedAt).toLocaleString("en-IN")
+          : "Not available" %>
+      </p>
+
+      <p class="engineer-report-preserve-text">
+        <strong>Review remarks:</strong>
+        <%= report.reviewRemarks || "No review remarks added." %>
+      </p>
+    </div>
+  <% } %>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>

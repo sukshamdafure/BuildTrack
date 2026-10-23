@@ -1,0 +1,138 @@
+
+<%- include("../partials/dashboard-layout-start") %>
+
+<div class="page-header">
+    <div>
+        <span class="page-eyebrow">FINANCIAL MANAGEMENT</span>
+        <h1>Record Expense</h1>
+        <p>Capture a project expense with its category, date, and amount.</p>
+    </div>
+
+    <div class="page-header-actions">
+        <a href="/engineer/expenses" class="secondary-button">
+            Back to Expenses
+        </a>
+    </div>
+</div>
+
+<section class="dashboard-section">
+    <div class="expense-form-card">
+        <% if (error) { %>
+            <div class="expense-form-error" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (!projects || projects.length === 0) { %>
+            <div class="empty-dashboard-state">
+                <h3>No projects available</h3>
+                <p>You must have an assigned project before recording an expense.</p>
+                <a href="/engineer/projects/new" class="page-action-button">
+                    Create Project
+                </a>
+            </div>
+        <% } else { %>
+            <form
+                action="/engineer/expenses"
+                method="POST"
+                class="expense-form"
+            >
+                <div class="expense-form-grid">
+                    <div class="expense-form-field">
+                        <label for="project">Project *</label>
+                        <select id="project" name="project" required>
+                            <option value="">Select a project</option>
+
+                            <% projects.forEach(item => { %>
+                                <option
+                                    value="<%= item._id %>"
+                                    <%= String(formData.project || "") === String(item._id)
+                                        ? "selected"
+                                        : "" %>
+                                >
+                                    <%= item.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="expense-form-field">
+                        <label for="category">Expense Category *</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select category</option>
+
+                            <% const categories = [
+                                ["MATERIAL", "Material"],
+                                ["LABOUR", "Labour"],
+                                ["EQUIPMENT", "Equipment"],
+                                ["TRANSPORTATION", "Transportation"],
+                                ["OTHER", "Other"]
+                            ]; %>
+
+                            <% categories.forEach(category => { %>
+                                <option
+                                    value="<%= category[0] %>"
+                                    <%= formData.category === category[0]
+                                        ? "selected"
+                                        : "" %>
+                                >
+                                    <%= category[1] %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+
+                    <div class="expense-form-field">
+                        <label for="amount">Amount (₹) *</label>
+                        <input
+                            type="number"
+                            id="amount"
+                            name="amount"
+                            min="0"
+                            step="0.01"
+                            required
+                            value="<%= formData.amount ?? '' %>"
+                            placeholder="e.g. 2500"
+                        >
+                    </div>
+
+                    <div class="expense-form-field">
+                        <label for="date">Expense Date *</label>
+                        <input
+                            type="date"
+                            id="date"
+                            name="date"
+                            required
+                            value="<%= formData.date || new Date().toISOString().slice(0, 10) %>"
+                        >
+                    </div>
+
+                    <div class="expense-form-field expense-form-field-full">
+                        <label for="description">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            maxlength="500"
+                            placeholder="Describe what this expense was for"
+                        ><%= formData.description || "" %></textarea>
+                        <small>Maximum 500 characters.</small>
+                    </div>
+                </div>
+
+                <div class="expense-form-actions">
+                    <a href="/engineer/expenses" class="secondary-button">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="page-action-button">
+                        Save Expense
+                    </button>
+                </div>
+            </form>
+        <% } %>
+    </div>
+</section>
+
+<%- include("../partials/dashboard-layout-end") %>
+
