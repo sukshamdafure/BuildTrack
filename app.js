@@ -59,7 +59,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // ==========================================
 // SESSION
 // ==========================================
-
+app.set("trust proxy", 1);
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
