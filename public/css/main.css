@@ -10604,3 +10604,70 @@ textarea:focus {
         min-width: 0;
     }
 }
+/* BuildTrack navbar: mobile layout */
+@media screen and (max-width: 768px) {
+    .top-navbar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        height: auto;
+        min-height: 60px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+    }
+
+    .navbar-left {
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .user-info {
+        min-width: 0;
+        max-width: 120px;
+    }
+
+    .user-name,
+    .user-role {
+        overflow-wrap: anywhere;
+    }
+
+    .brand {
+        white-space: nowrap;
+    }
+
+    .logout-link,
+    .navbar-link,
+    .navbar-button {
+        white-space: nowrap;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .top-navbar {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .navbar-right {
+        gap: 8px;
+    }
+
+    .user-info {
+        max-width: 90px;
+    }
+}
