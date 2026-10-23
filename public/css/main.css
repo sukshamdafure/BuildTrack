@@ -10587,3 +10587,20 @@ textarea:focus {
         animation-iteration-count: 1 !important;
     }
 }
+/* Mobile navbar responsive fix */
+@media (max-width: 768px) {
+    .top-navbar {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 60px;
+        padding: 10px 14px;
+        box-sizing: border-box;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .top-navbar > * {
+        min-width: 0;
+    }
+}
