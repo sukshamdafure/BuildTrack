@@ -10671,3 +10671,38 @@ textarea:focus {
         max-width: 90px;
     }
 }
+/* BuildTrack mobile sidebar fix */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        height: auto;
+        box-sizing: border-box;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 8px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 8px 12px;
+        box-sizing: border-box;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sidebar-link {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .sidebar-header,
+    .sidebar-footer {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+}
